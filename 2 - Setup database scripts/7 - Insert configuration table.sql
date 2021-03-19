@@ -1,3 +1,6 @@
+-- Copyright (c) Microsoft Corporation.
+-- Licensed under the MIT License.
+
 TRUNCATE TABLE [operation].[MetadataTableControl]
 
 -------------------------------------------Green CAB
