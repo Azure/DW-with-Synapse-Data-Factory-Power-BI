@@ -36,6 +36,9 @@ The Azure Services can be created in Azure Portal or executing PowerShell script
 
 [Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/1%20-%20Setup%20-%20PowerShell%20scripts)
 
+Fallow below steps to create Azure Services:
+![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/AzureServices.png)
+
 1.1 - Create resource group.ps1
 
 2.2 - Create Storage Account.ps1
@@ -52,6 +55,9 @@ Once you create Azure services, is necessary to deploy database objects. Please 
 
 [Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/2%20-%20Setup%20database%20scripts)
 
+Fallow below steps to create Azure Services:
+![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/SynapseObjects.png)
+
 1.1 - Create schemas.sql
 
 2.2 - Create operational tables.sql
@@ -67,6 +73,9 @@ Once you create Azure services, is necessary to deploy database objects. Please 
 7.7 - Insert configuration table.sql
 
 # 3 - Deploy ARM template
+
+Once you deployed Azure services and Synapse objects you need to deploy Azure Data Factory ARM template. Please execute next steps:
+![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/DataFactoryPipeline.png)
 
 Once you deployed Azure services and Synapse objects you need to deploy Azure Data Factory ARM template. Please execute next steps:
 
