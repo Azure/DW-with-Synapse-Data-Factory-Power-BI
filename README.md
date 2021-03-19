@@ -74,7 +74,7 @@ Fallow below steps to create Azure Services:
 
 # 3 - Deploy ARM template
 
-Once you deployed Azure services and Synapse objects you need to deploy Azure Data Factory ARM template. Please execute next steps:
+This is the ARM template you are about to deploy:
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/DataFactoryPipeline.png)
 
 Once you deployed Azure services and Synapse objects you need to deploy Azure Data Factory ARM template. Please execute next steps:
