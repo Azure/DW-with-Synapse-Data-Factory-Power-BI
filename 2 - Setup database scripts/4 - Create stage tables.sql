@@ -1,3 +1,6 @@
+-- Copyright (c) Microsoft Corporation.
+-- Licensed under the MIT License.
+
 CREATE TABLE stage.NYCCabTrip_Green
     (  
 	[VendorID] varchar(8000),
