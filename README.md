@@ -34,7 +34,7 @@ We will split the solution deployment in:
 
 The Azure Services can be created in Azure Portal or executing PowerShell scripts:
 
-[Scripts location](https://github.com/brunohca/Power-BI-ADF-Synapse/tree/patch-1/1%20-%20Setup%20-%20PowerShell%20scripts)
+[Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/1%20-%20Setup%20-%20PowerShell%20scripts)
 
 1.1 - Create resource group.ps1
 
@@ -50,7 +50,7 @@ The Azure Services can be created in Azure Portal or executing PowerShell script
 
 Once you create Azure services, is necessary to deploy database objects. Please execute next steps:
 
-[Scripts location](https://github.com/brunohca/Power-BI-ADF-Synapse/tree/patch-1/1%20-%20Setup%20database%20scripts)
+[Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/2%20-%20Setup%20database%20scripts)
 
 1.1 - Create schemas.sql
 
@@ -70,7 +70,7 @@ Once you create Azure services, is necessary to deploy database objects. Please 
 
 Once you deployed Azure services and Synapse objects you need to deploy Azure Data Factory ARM template. Please execute next steps:
 
-[ARM template location](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/3%20-%20ARM%20Template/arm_template.json)
+[ARM template location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/3%20-%20ARM%20Template)
 
 1.1 - Before deploy ARM template file, you need to replace some values. There are 6 points to replace the information before deploy scripts. Please replace these values carfully.
 
@@ -86,7 +86,7 @@ Once you deployed Azure services and Synapse objects you need to deploy Azure Da
 
 Is necessary to upload a file into the storage account. Please fallow the instructions:
 
-1.1 - Download file named "taxi_zone_lookup.csv": [Dowload CSV file](https://github.com/brunohca/Power-BI-ADF-Synapse/tree/patch-1/3)
+1.1 - Download file named "taxi_zone_lookup.csv": [Dowload CSV file](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/4%20-%20Others/taxi_zone_lookup.csv)
 
 2.2 - Upload file into this location in the storage account: "nyccabdata\ingestion\lookpup\taxi_zone_lookup.csv"
 
