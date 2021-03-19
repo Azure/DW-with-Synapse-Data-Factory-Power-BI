@@ -1,3 +1,6 @@
+-- Copyright (c) Microsoft Corporation.
+-- Licensed under the MIT License.
+
 CREATE TABLE dw.DimCabType
     (  
     CabTypeKey               int NOT NULL,
