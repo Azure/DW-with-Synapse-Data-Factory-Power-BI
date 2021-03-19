@@ -1,0 +1,1832 @@
+#1) Replace storage account key in row 14 with your storage account key value:
+#Insert your storage account key. [Replace with your storage account key]
+
+#2) Replace server value for dataset: "ds_Synapse_DataFlow_Var"
+#ServerName value from "[ServerName].sql.azuresynapse.net" to  your Synapse server name:
+
+#3) Replace server value for linked server: "ls_Synapse_TransportDW"
+#ServerName value from "[ServerName].sql.azuresynapse.net" to  your Synapse server name:
+
+#4) Replace server value for linked server: "ls_Synapse_Operation"
+#ServerName value from "[ServerName].sql.azuresynapse.net" to  your Synapse server name:
+
+#5) Storage account for datasets: "ds_ADL2_NYCRideAnalysis_parquet" and "ds_ADL2_NYCRideAnalysis_csv":
+#StorageAccount value for "[StorageAccount].
+
+#6) Search for "[StorageAccount]" and replace with your storage account name.
+
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "transporttransformation"
+        },
+        "ls_transport_transformation_adl2_accountKey": {
+            "type": "secureString",
+            "defaultValue": "[Replace with your storage account key]"
+        },
+        "ls_Synapse_TransportDW_connectionString": {
+            "type": "secureString",
+            "defaultValue": "integrated security=False;encrypt=True;connection timeout=30;data source=@{linkedService().server};initial catalog=@{linkedService().database};user id=@{linkedService().username}"
+        },
+        "ls_Synapse_Operation_connectionString": {
+            "type": "secureString",
+            "defaultValue": "integrated security=False;encrypt=True;connection timeout=30;data source=@{linkedService().server};initial catalog=@{linkedService().database};user id=@{linkedService().username}"
+        },
+        "ls_transport_transformation_adl2_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://@{linkedService().StorageAccount}.dfs.core.windows.net"
+        },
+        "ls_NYC_Cab_Repository_2_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://nyc-tlc.s3.amazonaws.com/"
+        },
+        "ls_NYC_Cab_Repository_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://s3.amazonaws.com/nyc-tlc/"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_NYC_Cab_Repository')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_NYC_Cab_Repository",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "FileAddress": {
+                        "type": "string",
+                        "defaultValue": "https://s3.amazonaws.com/nyc-tlc/trip+data/"
+                    },
+                    "FileName": {
+                        "type": "string",
+                        "defaultValue": "yellow_tripdata_2019-01.csv"
+                    }
+                },
+                "folder": {
+                    "name": "Transport Information"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "HttpServerLocation",
+                        "relativeUrl": {
+                            "value": "@concat(dataset().FileAddress,dataset().FileName)",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_NYC_Cab_Repository')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_NYC_Cab_Repository2')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_NYC_Cab_Repository_2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "FileAddress": {
+                        "type": "string",
+                        "defaultValue": "https://s3.amazonaws.com/nyc-tlc/trip+data/"
+                    },
+                    "FileName": {
+                        "type": "string",
+                        "defaultValue": "yellow_tripdata_2019-01.csv"
+                    }
+                },
+                "folder": {
+                    "name": "Transport Information"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "HttpServerLocation",
+                        "relativeUrl": {
+                            "value": "@concat(dataset().FileAddress,dataset().FileName)",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_NYC_Cab_Repository_2')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_Synapse_NYCRideAnalysis')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_Synapse_TransportDW",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "server": "tcp:transportsynapseanalytics.sql.azuresynapse.net,1433",
+                        "database": "TransportDW",
+                        "username": "TransportSynapseAdmin"
+                    }
+                },
+                "parameters": {
+                    "DatabaseName": {
+                        "type": "string",
+                        "defaultValue": "TransportDW"
+                    },
+                    "SchemaName": {
+                        "type": "string",
+                        "defaultValue": "stage"
+                    },
+                    "TableName": {
+                        "type": "string",
+                        "defaultValue": "External_NYCCabTrip_Yellow"
+                    }
+                },
+                "folder": {
+                    "name": "Transport Information"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": {
+                        "value": "@dataset().SchemaName",
+                        "type": "Expression"
+                    },
+                    "table": {
+                        "value": "@dataset().TableName",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_Synapse_TransportDW')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_ADL2_NYCRideAnalysis_parquet')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_transport_transformation_adl2",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "StorageAccount": {
+                            "value": "@dataset().StorageAccount",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "parameters": {
+                    "StorageAccount": {
+                        "type": "string",
+                        "defaultValue": "[StorageAccount]"
+                    },
+                    "ContainerName": {
+                        "type": "string",
+                        "defaultValue": "nyccabdata"
+                    },
+                    "FolderName": {
+                        "type": "string",
+                        "defaultValue": "ingestion/yellow/"
+                    },
+                    "FileName": {
+                        "type": "string",
+                        "defaultValue": "yellow_tripdata_2019-01.parquet"
+                    }
+                },
+                "folder": {
+                    "name": "Transport Information"
+                },
+                "annotations": [],
+                "type": "Parquet",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().FolderName",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().ContainerName",
+                            "type": "Expression"
+                        }
+                    },
+                    "compressionCodec": "snappy"
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_transport_transformation_adl2')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_ADL2_NYCRideAnalysis_csv')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_transport_transformation_adl2",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "StorageAccount": {
+                            "value": "@dataset().StorageAccount",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "parameters": {
+                    "StorageAccount": {
+                        "type": "string",
+                        "defaultValue": "[StorageAccount]"
+                    },
+                    "ContainerName": {
+                        "type": "string",
+                        "defaultValue": "nyccabdata"
+                    },
+                    "FolderName": {
+                        "type": "string",
+                        "defaultValue": "ingestion/lookup/"
+                    },
+                    "FileName": {
+                        "type": "string",
+                        "defaultValue": "taxi_zone_lookup.csv"
+                    }
+                },
+                "folder": {
+                    "name": "Transport Information"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().FolderName",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().ContainerName",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_transport_transformation_adl2')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_Synapse_DataFlow')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_Synapse_TransportDW",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "UserName": "TransportSynapseAdmin"
+                    }
+                },
+                "folder": {
+                    "name": "Transport Information"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "CabTripKey",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "VendorKey",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "CabTypeKey",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "LpepPickupDatetime",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "LpepDropoffDatetime",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "StoreAndFwdFlag",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RateKey",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "PULocationKey",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "DOLocationKey",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "TripTypeKey",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "PaymentTypeKey",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "PassengerCount",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "TripDistance",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    },
+                    {
+                        "name": "FareAmount",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    },
+                    {
+                        "name": "Extra",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    },
+                    {
+                        "name": "MtaTax",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    },
+                    {
+                        "name": "TipAmount",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    },
+                    {
+                        "name": "TollsAmount",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    },
+                    {
+                        "name": "ImprovementSurcharge",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    },
+                    {
+                        "name": "TotalAmount",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dw",
+                    "table": "FactCabTrip"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_Synapse_TransportDW')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_Synapse_DataFlow_Var')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_Synapse_Operation",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": "[ServerName].sql.azuresynapse.net",
+                        "DatabaseName": {
+                            "value": "@dataset().DatabaseName",
+                            "type": "Expression"
+                        },
+                        "UserName": "TransportSynapseAdmin"
+                    }
+                },
+                "parameters": {
+                    "DatabaseName": {
+                        "type": "string",
+                        "defaultValue": "DatabaseName"
+                    },
+                    "SchemaName": {
+                        "type": "string",
+                        "defaultValue": "SchemaName"
+                    },
+                    "TableName": {
+                        "type": "string",
+                        "defaultValue": "TableName"
+                    }
+                },
+                "folder": {
+                    "name": "Transport Information"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": {
+                        "value": "@dataset().SchemaName",
+                        "type": "Expression"
+                    },
+                    "table": {
+                        "value": "@dataset().TableName",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_Synapse_Operation')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TransportationIntegrationRuntime')]",
+            "type": "Microsoft.DataFactory/factories/integrationRuntimes",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "Managed",
+                "typeProperties": {
+                    "computeProperties": {
+                        "location": "AutoResolve",
+                        "dataFlowProperties": {
+                            "computeType": "General",
+                            "coreCount": 16,
+                            "timeToLive": 10
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_transport_transformation_adl2')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "StorageAccount": {
+                        "type": "String"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureBlobFS",
+                "typeProperties": {
+                    "url": "[parameters('ls_transport_transformation_adl2_properties_typeProperties_url')]",
+                    "accountKey": {
+                        "type": "SecureString",
+                        "value": "[parameters('ls_transport_transformation_adl2_accountKey')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_Synapse_TransportDW')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "server": {
+                        "type": "string",
+                        "defaultValue": "[ServerName].sql.azuresynapse.net"
+                    },
+                    "database": {
+                        "type": "string",
+                        "defaultValue": "TransportDW"
+                    },
+                    "username": {
+                        "type": "string",
+                        "defaultValue": "TransportSynapseAdmin"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureSqlDW",
+                "typeProperties": {
+                    "connectionString": "[parameters('ls_Synapse_TransportDW_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_NYC_Cab_Repository_2')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "HttpServer",
+                "typeProperties": {
+                    "url": "[parameters('ls_NYC_Cab_Repository_2_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "Anonymous"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_NYC_Cab_Repository')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "HttpServer",
+                "typeProperties": {
+                    "url": "[parameters('ls_NYC_Cab_Repository_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "Anonymous"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_Synapse_Operation')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "server": {
+                        "type": "string",
+                        "defaultValue": "[ServerName].sql.azuresynapse.net"
+                    },
+                    "database": {
+                        "type": "string",
+                        "defaultValue": "TransportDW"
+                    },
+                    "username": {
+                        "type": "string",
+                        "defaultValue": "TransportSynapseAdmin"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureSqlDW",
+                "typeProperties": {
+                    "connectionString": "[parameters('ls_Synapse_Operation_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Load_dw_FactCabTrip')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "NYC Data Transformation"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ReadFromStageYellow"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ReadFromStageGreen"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ReadDimVendor"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ReadDimRate"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ReadDimLocationPU"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ReadDimTripType"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ReadDimPaymentType"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ReadDimLocationDO"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference"
+                            },
+                            "name": "GetMaxCabTripKey"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ReadDimCabType"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "type": "DatasetReference"
+                            },
+                            "name": "InsertIntodwFactCabTrip"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "UnionYellowandGreen"
+                        },
+                        {
+                            "name": "JoinMaxValueCabTripKey"
+                        },
+                        {
+                            "name": "GenerateCabTripKey"
+                        },
+                        {
+                            "name": "GenerateCabTripKeyDefault"
+                        },
+                        {
+                            "name": "GetVendorKey"
+                        },
+                        {
+                            "name": "GetRateKey"
+                        },
+                        {
+                            "name": "GetPULocationKey"
+                        },
+                        {
+                            "name": "GetDOLocationKey"
+                        },
+                        {
+                            "name": "GetDimTripType"
+                        },
+                        {
+                            "name": "GetPaymentType"
+                        },
+                        {
+                            "name": "VerifyInsert"
+                        },
+                        {
+                            "name": "GetDimCabType"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tVendorID as integer,\n\t\tCabTypeID as integer,\n\t\tLpepPickupDatetime as timestamp,\n\t\tLpepDropoffDatetime as timestamp,\n\t\tStoreAndFwdFlag as string,\n\t\tRatecodeID as integer,\n\t\tPULocationID as integer,\n\t\tDOLocationID as integer,\n\t\tPassengerCount as integer,\n\t\tTripDistance as decimal(10,2),\n\t\tFareAmount as decimal(10,2),\n\t\tExtra as decimal(10,2),\n\t\tMtaTax as decimal(10,2),\n\t\tTipAmount as decimal(10,2),\n\t\tTollsAmount as decimal(10,2),\n\t\tImprovementSurcharge as decimal(10,2),\n\t\tTotalAmount as decimal(10,2),\n\t\tPaymentoType as integer,\n\t\tTripType as integer,\n\t\tCongestionSurcharge as decimal(10,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT\\n    CONVERT(INT,VendorID)                           AS VendorID,\\n    1                                               AS CabTypeID,\\n    CONVERT(DATETIME,lpep_pickup_datetime)          AS LpepPickupDatetime,\\n    CONVERT(DATETIME,lpep_dropoff_datetime)         AS LpepDropoffDatetime,\\n    store_and_fwd_flag                              AS StoreAndFwdFlag,\\n    CONVERT(INT,RatecodeID)                         AS RatecodeID,\\n    CONVERT(INT,PULocationID)                       AS PULocationID,\\n    CONVERT(INT,DOLocationID)                       AS DOLocationID,\\n    CONVERT(INT,passenger_count)                    AS PassengerCount,\\n    CONVERT(DECIMAL(10,2),trip_distance)            AS TripDistance,\\n    CONVERT(DECIMAL(10,2),fare_amount)              AS FareAmount,\\n    CONVERT(DECIMAL(10,2),extra)                    AS Extra,\\n    CONVERT(DECIMAL(10,2),mta_tax)                  AS MtaTax,\\n    CONVERT(DECIMAL(10,2),tip_amount)               AS TipAmount,\\n    CONVERT(DECIMAL(10,2),tolls_amount)             AS TollsAmount,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(improvement_surcharge,\\'\\') AS DECIMAL(10,2))) AS improvement_surcharge,\\n    CONVERT(DECIMAL(10,2),total_amount)             AS TotalAmount,\\n    CONVERT(INT,payment_type)                       AS PaymentoType,\\n    1                                               AS TripType,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(congestion_surcharge,\\'\\') AS DECIMAL(10,2)))  AS CongestionSurcharge\\nFROM\\n    stage.NYCCabTrip_Yellow',\n\tformat: 'query',\n\tstaged: false) ~> ReadFromStageYellow\nsource(output(\n\t\tVendorID as integer,\n\t\tCabTypeID as integer,\n\t\tLpepPickupDatetime as timestamp,\n\t\tLpepDropoffDatetime as timestamp,\n\t\tStoreAndFwdFlag as string,\n\t\tRatecodeID as integer,\n\t\tPULocationID as integer,\n\t\tDOLocationID as integer,\n\t\tPassengerCount as integer,\n\t\tTripDistance as decimal(10,2),\n\t\tFareAmount as decimal(10,2),\n\t\tExtra as decimal(10,2),\n\t\tMtaTax as decimal(10,2),\n\t\tTipAmount as decimal(10,2),\n\t\tTollsAmount as decimal(10,2),\n\t\tImprovementSurcharge as decimal(10,2),\n\t\tTotalAmount as decimal(10,2),\n\t\tPaymentoType as integer,\n\t\tTripType as integer,\n\t\tCongestionSurcharge as decimal(10,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT\\n    CONVERT(INT,VendorID)                           AS VendorID,\\n    2                                               AS CabTypeID,\\n    CONVERT(DATETIME,lpep_pickup_datetime)          AS LpepPickupDatetime,\\n    CONVERT(DATETIME,lpep_dropoff_datetime)         AS LpepDropoffDatetime,\\n    store_and_fwd_flag                              AS StoreAndFwdFlag,\\n    CONVERT(INT,RatecodeID)                         AS RatecodeID,\\n    CONVERT(INT,PULocationID)                       AS PULocationID,\\n    CONVERT(INT,DOLocationID)                       AS DOLocationID,\\n    CONVERT(INT,passenger_count)                    AS PassengerCount,\\n    CONVERT(DECIMAL(10,2),trip_distance)            AS TripDistance,\\n    CONVERT(DECIMAL(10,2),fare_amount)              AS FareAmount,\\n    CONVERT(DECIMAL(10,2),extra)                    AS Extra,\\n    CONVERT(DECIMAL(10,2),mta_tax)                  AS MtaTax,\\n    CONVERT(DECIMAL(10,2),tip_amount)               AS TipAmount,\\n    CONVERT(DECIMAL(10,2),tolls_amount)             AS TollsAmount,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(improvement_surcharge,\\'\\') AS DECIMAL(10,2))) AS improvement_surcharge,\\n    CONVERT(DECIMAL(10,2),total_amount)             AS TotalAmount,\\n    CONVERT(INT,payment_type)                       AS PaymentoType,\\n    CONVERT(INT,trip_type)                          AS TripType,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(congestion_surcharge,\\'\\') AS DECIMAL(10,2)))  AS CongestionSurcharge\\nFROM\\n    stage.NYCCabTrip_Green',\n\tformat: 'query',\n\tstaged: false) ~> ReadFromStageGreen\nsource(output(\n\t\tVendorKey as integer,\n\t\tVendorID as integer,\n\t\tVendorDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimVendor',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimVendor\nsource(output(\n\t\tRateKey as integer,\n\t\tRateID as integer,\n\t\tRateDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimRate WHERE RateID IS NOT NULL',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimRate\nsource(output(\n\t\tLocationKey as integer,\n\t\tLocationID as integer,\n\t\tBorough as string,\n\t\tZone as string,\n\t\tservice_zone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimLocationPU\nsource(output(\n\t\tTripTypeKey as integer,\n\t\tTripTypeID as integer,\n\t\tTripTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimTripType',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimTripType\nsource(output(\n\t\tPaymentTypeKey as integer,\n\t\tPaymentTypeID as integer,\n\t\tPaymentTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimPaymentType',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimPaymentType\nsource(output(\n\t\tLocationKey as integer,\n\t\tLocationID as integer,\n\t\tBorough as string,\n\t\tZone as string,\n\t\tservice_zone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimLocationDO\nsource(output(\n\t\tMaxCabTripKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT MaxCabTripKey = ISNULL(MAX(CabTripKey),0) from [dw].[FactCabTrip]',\n\tformat: 'query',\n\tstaged: false) ~> GetMaxCabTripKey\nsource(output(\n\t\tCabTypeKey as integer,\n\t\tCabTYpeID as integer,\n\t\tCabTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM [dw].[DimCabType]',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimCabType\nReadFromStageYellow, ReadFromStageGreen union(byName: true)~> UnionYellowandGreen\nUnionYellowandGreen, GetMaxCabTripKey join(1 == 1,\n\tjoinType:'cross',\n\tbroadcast: 'auto')~> JoinMaxValueCabTripKey\nJoinMaxValueCabTripKey keyGenerate(output(CreateCabTripKey as long),\n\tstartAt: 1L) ~> GenerateCabTripKey\nGenerateCabTripKey derive(CabTripKey = CreateCabTripKey + MaxCabTripKey) ~> GenerateCabTripKeyDefault\nGenerateCabTripKeyDefault, ReadDimVendor lookup(UnionYellowandGreen@VendorID == ReadDimVendor@VendorID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetVendorKey\nGetVendorKey, ReadDimRate lookup(RatecodeID == RateID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetRateKey\nGetRateKey, ReadDimLocationPU lookup(PULocationID == LocationID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetPULocationKey\nGetPULocationKey, ReadDimLocationDO lookup(DOLocationID == ReadDimLocationDO@LocationID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDOLocationKey\nGetDOLocationKey, ReadDimTripType lookup(TripType == TripTypeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDimTripType\nGetDimTripType, ReadDimPaymentType lookup(PaymentoType == PaymentTypeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetPaymentType\nGetDimCabType alterRow(insertIf(1==1)) ~> VerifyInsert\nGetPaymentType, ReadDimCabType lookup(UnionYellowandGreen@CabTypeID == ReadDimCabType@CabTYpeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDimCabType\nVerifyInsert sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tmapColumn(\n\t\tCabTripKey,\n\t\tVendorKey,\n\t\tCabTypeKey,\n\t\tLpepPickupDatetime,\n\t\tLpepDropoffDatetime,\n\t\tStoreAndFwdFlag,\n\t\tRateKey,\n\t\tPULocationKey = ReadDimLocationPU@LocationKey,\n\t\tDOLocationKey = ReadDimLocationDO@LocationKey,\n\t\tTripTypeKey,\n\t\tPaymentTypeKey,\n\t\tPassengerCount,\n\t\tTripDistance,\n\t\tFareAmount,\n\t\tExtra,\n\t\tMtaTax,\n\t\tTipAmount,\n\t\tTollsAmount,\n\t\tImprovementSurcharge,\n\t\tTotalAmount\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1) ~> InsertIntodwFactCabTrip"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow')]",
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow_Var')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Load from web to ADL2')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get files to load into blob",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": "SELECT * FROM [operation].[MetadataTableControl] WHERE GroupName = 'NYC Ride Analysis'\nAND GroupLoad = 'HTTP to ADL2 - 1'",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "DatabaseName": "TransportDW"
+                                }
+                            },
+                            "firstRowOnly": false
+                        }
+                    },
+                    {
+                        "name": "Get files to load into blob - 2",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": "SELECT * FROM [operation].[MetadataTableControl] WHERE GroupName = 'NYC Ride Analysis'\nAND GroupLoad = 'HTTP to ADL2 - 2'",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "DatabaseName": "TransportDW"
+                                }
+                            },
+                            "firstRowOnly": false
+                        }
+                    },
+                    {
+                        "name": "Load files into blob",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get files to load into blob",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get files to load into blob').output.value",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "Ingest files into blob",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "DelimitedTextSource",
+                                            "storeSettings": {
+                                                "type": "HttpReadSettings",
+                                                "requestMethod": "GET"
+                                            },
+                                            "formatSettings": {
+                                                "type": "DelimitedTextReadSettings"
+                                            }
+                                        },
+                                        "sink": {
+                                            "type": "ParquetSink",
+                                            "storeSettings": {
+                                                "type": "AzureBlobFSWriteSettings"
+                                            },
+                                            "formatSettings": {
+                                                "type": "ParquetWriteSettings"
+                                            }
+                                        },
+                                        "enableStaging": false,
+                                        "translator": {
+                                            "type": "TabularTranslator",
+                                            "typeConversion": true,
+                                            "typeConversionSettings": {
+                                                "allowDataTruncation": true,
+                                                "treatBooleanAsNumber": false
+                                            }
+                                        }
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "ds_NYC_Cab_Repository",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "FileAddress": {
+                                                    "value": "@item().SourceControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "FileName": {
+                                                    "value": "@item().SourceControl2",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "ds_ADL2_NYCRideAnalysis_parquet",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "StorageAccount": {
+                                                    "value": "@item().DestinationControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "ContainerName": {
+                                                    "value": "@item().DestinationControl2",
+                                                    "type": "Expression"
+                                                },
+                                                "FolderName": {
+                                                    "value": "@item().DestinationControl3",
+                                                    "type": "Expression"
+                                                },
+                                                "FileName": {
+                                                    "value": "@item().DestinationControl4",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Load files into blob - 2",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get files to load into blob - 2",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get files to load into blob - 2').output.value",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "Ingest files into blob - 2",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "DelimitedTextSource",
+                                            "storeSettings": {
+                                                "type": "HttpReadSettings",
+                                                "requestMethod": "GET"
+                                            },
+                                            "formatSettings": {
+                                                "type": "DelimitedTextReadSettings"
+                                            }
+                                        },
+                                        "sink": {
+                                            "type": "ParquetSink",
+                                            "storeSettings": {
+                                                "type": "AzureBlobFSWriteSettings"
+                                            },
+                                            "formatSettings": {
+                                                "type": "ParquetWriteSettings"
+                                            }
+                                        },
+                                        "enableStaging": false,
+                                        "translator": {
+                                            "type": "TabularTranslator",
+                                            "typeConversion": true,
+                                            "typeConversionSettings": {
+                                                "allowDataTruncation": true,
+                                                "treatBooleanAsNumber": false
+                                            }
+                                        }
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "ds_NYC_Cab_Repository2",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "FileAddress": {
+                                                    "value": "@item().SourceControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "FileName": {
+                                                    "value": "@item().SourceControl2",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "ds_ADL2_NYCRideAnalysis_parquet",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "StorageAccount": {
+                                                    "value": "@item().DestinationControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "ContainerName": {
+                                                    "value": "@item().DestinationControl2",
+                                                    "type": "Expression"
+                                                },
+                                                "FolderName": {
+                                                    "value": "@item().DestinationControl3",
+                                                    "type": "Expression"
+                                                },
+                                                "FileName": {
+                                                    "value": "@item().DestinationControl4",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "folder": {
+                    "name": "NYC Data Transformation"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-03-09T19:57:21Z"
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow_Var')]",
+                "[concat(variables('factoryId'), '/datasets/ds_NYC_Cab_Repository')]",
+                "[concat(variables('factoryId'), '/datasets/ds_ADL2_NYCRideAnalysis_parquet')]",
+                "[concat(variables('factoryId'), '/datasets/ds_NYC_Cab_Repository2')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Load from ADLS to stage')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get files to load into Synapse - Yellow",
+                        "type": "Lookup",
+                        "dependsOn": [
+                            {
+                                "activity": "Set storage account value",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": "SELECT * FROM [operation].[MetadataTableControl] WHERE GroupName = 'NYC Ride Analysis'\nAND GroupLoad = 'ADL2 to Synapse (Stage)' AND FinalTableName = 'NYCCabTrip_Yellow'",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "DatabaseName": "TransportDW"
+                                }
+                            },
+                            "firstRowOnly": false
+                        }
+                    },
+                    {
+                        "name": "Load files into Synapse - Yellow",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get files to load into Synapse - Yellow",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get files to load into Synapse - Yellow').output.value",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "Ingestion from ADL2 to Synapse - Yellow",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "SqlDWSource",
+                                            "queryTimeout": "02:00:00",
+                                            "partitionOption": "None"
+                                        },
+                                        "sink": {
+                                            "type": "SqlDWSink",
+                                            "preCopyScript": {
+                                                "value": "@{concat('TRUNCATE TABLE ',item().DestinationControl2,'.',item().DestinationControl3)}",
+                                                "type": "Expression"
+                                            },
+                                            "allowPolyBase": true,
+                                            "polyBaseSettings": {
+                                                "rejectValue": 0,
+                                                "rejectType": "value",
+                                                "useTypeDefault": true
+                                            },
+                                            "disableMetricsCollection": false
+                                        },
+                                        "enableStaging": true,
+                                        "stagingSettings": {
+                                            "linkedServiceName": {
+                                                "referenceName": "ls_transport_transformation_adl2",
+                                                "type": "LinkedServiceReference",
+                                                "parameters": {
+                                                    "StorageAccount": {
+                                                        "value": "@variables('StorageAccountName')",
+                                                        "type": "Expression"
+                                                    }
+                                                }
+                                            },
+                                            "path": "stagearea"
+                                        }
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "ds_Synapse_NYCRideAnalysis",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "DatabaseName": {
+                                                    "value": "@item().SourceControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "SchemaName": {
+                                                    "value": "@item().SourceControl2",
+                                                    "type": "Expression"
+                                                },
+                                                "TableName": {
+                                                    "value": "@item().SourceControl3",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "ds_Synapse_NYCRideAnalysis",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "DatabaseName": {
+                                                    "value": "@item().DestinationControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "SchemaName": {
+                                                    "value": "@item().DestinationControl2",
+                                                    "type": "Expression"
+                                                },
+                                                "TableName": {
+                                                    "value": "@item().DestinationControl3",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Get files to load into Synapse - Green",
+                        "type": "Lookup",
+                        "dependsOn": [
+                            {
+                                "activity": "Load files into Synapse - Yellow",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": "SELECT * FROM [operation].[MetadataTableControl] WHERE GroupName = 'NYC Ride Analysis'\nAND GroupLoad = 'ADL2 to Synapse (Stage)' AND FinalTableName = 'NYCCabTrip_Green'",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "DatabaseName": "TransportDW"
+                                }
+                            },
+                            "firstRowOnly": false
+                        }
+                    },
+                    {
+                        "name": "Load files into Synapse - Green",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get files to load into Synapse - Green",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get files to load into Synapse - Green').output.value",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "Ingestion from ADL2 to Synapse - Green",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "SqlDWSource",
+                                            "queryTimeout": "02:00:00",
+                                            "partitionOption": "None"
+                                        },
+                                        "sink": {
+                                            "type": "SqlDWSink",
+                                            "preCopyScript": {
+                                                "value": "@{concat('TRUNCATE TABLE ',item().DestinationControl2,'.',item().DestinationControl3)}",
+                                                "type": "Expression"
+                                            },
+                                            "allowPolyBase": true,
+                                            "polyBaseSettings": {
+                                                "rejectValue": 0,
+                                                "rejectType": "value",
+                                                "useTypeDefault": true
+                                            },
+                                            "disableMetricsCollection": false
+                                        },
+                                        "enableStaging": true,
+                                        "stagingSettings": {
+                                            "linkedServiceName": {
+                                                "referenceName": "ls_transport_transformation_adl2",
+                                                "type": "LinkedServiceReference",
+                                                "parameters": {
+                                                    "StorageAccount": {
+                                                        "value": "@variables('StorageAccountName')",
+                                                        "type": "Expression"
+                                                    }
+                                                }
+                                            },
+                                            "path": "stagearea"
+                                        }
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "ds_Synapse_NYCRideAnalysis",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "DatabaseName": {
+                                                    "value": "@item().SourceControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "SchemaName": {
+                                                    "value": "@item().SourceControl2",
+                                                    "type": "Expression"
+                                                },
+                                                "TableName": {
+                                                    "value": "@item().SourceControl3",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "ds_Synapse_NYCRideAnalysis",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "DatabaseName": {
+                                                    "value": "@item().DestinationControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "SchemaName": {
+                                                    "value": "@item().DestinationControl2",
+                                                    "type": "Expression"
+                                                },
+                                                "TableName": {
+                                                    "value": "@item().DestinationControl3",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Get stage storage account",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": "SELECT DISTINCT\n    DestinationControl1\nFROM\n    [operation].[MetadataTableControl]\nWHERE\n    GroupName = 'NYC Ride Analysis'\n    AND GroupLoad = 'HTTP to ADL2 - 2'",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "DatabaseName": "TransportDW"
+                                }
+                            },
+                            "firstRowOnly": true
+                        }
+                    },
+                    {
+                        "name": "Set storage account value",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "Get stage storage account",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "StorageAccountName",
+                            "value": {
+                                "value": "@{activity('Get stage storage account').output.firstRow.DestinationControl1}",
+                                "type": "Expression"
+                            }
+                        }
+                    }
+                ],
+                "variables": {
+                    "StorageAccountName": {
+                        "type": "String",
+                        "defaultValue": "[StorageAccount]"
+                    }
+                },
+                "folder": {
+                    "name": "NYC Data Transformation"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-03-09T19:57:21Z"
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow_Var')]",
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_NYCRideAnalysis')]",
+                "[concat(variables('factoryId'), '/linkedServices/ls_transport_transformation_adl2')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Load taxi zone')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get dimensions to load into dw",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": "SELECT * FROM [operation].[MetadataTableControl] WHERE GroupName = 'NYC Ride Analysis' AND GroupLoad = 'Load Dimensions'  ",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "DatabaseName": "TransportDW",
+                                    "SchemaName": "SchemaName",
+                                    "TableName": "TableName"
+                                }
+                            },
+                            "firstRowOnly": false
+                        }
+                    },
+                    {
+                        "name": "Load files into Synapse - dw",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get dimensions to load into dw",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get dimensions to load into dw').output.value",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "Ingest location into Synapse",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "DelimitedTextSource",
+                                            "storeSettings": {
+                                                "type": "AzureBlobFSReadSettings",
+                                                "recursive": true,
+                                                "enablePartitionDiscovery": false
+                                            },
+                                            "formatSettings": {
+                                                "type": "DelimitedTextReadSettings"
+                                            }
+                                        },
+                                        "sink": {
+                                            "type": "SqlDWSink",
+                                            "preCopyScript": {
+                                                "value": "@{concat('TRUNCATE TABLE ',item().DestinationControl2,'.',item().DestinationControl3)}",
+                                                "type": "Expression"
+                                            },
+                                            "disableMetricsCollection": false
+                                        },
+                                        "enableStaging": false,
+                                        "translator": {
+                                            "type": "TabularTranslator",
+                                            "typeConversion": true,
+                                            "typeConversionSettings": {
+                                                "allowDataTruncation": true,
+                                                "treatBooleanAsNumber": false
+                                            }
+                                        }
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "ds_ADL2_NYCRideAnalysis_csv",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "StorageAccount": {
+                                                    "value": "@item().SourceControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "ContainerName": {
+                                                    "value": "@item().SourceControl2",
+                                                    "type": "Expression"
+                                                },
+                                                "FolderName": {
+                                                    "value": "@item().SourceControl3",
+                                                    "type": "Expression"
+                                                },
+                                                "FileName": {
+                                                    "value": "@item().SourceControl4",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "ds_Synapse_NYCRideAnalysis",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "DatabaseName": {
+                                                    "value": "@item().DestinationControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "SchemaName": {
+                                                    "value": "@item().DestinationControl2",
+                                                    "type": "Expression"
+                                                },
+                                                "TableName": {
+                                                    "value": "@item().DestinationControl3",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "folder": {
+                    "name": "NYC Data Transformation"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-03-09T19:57:21Z"
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow_Var')]",
+                "[concat(variables('factoryId'), '/datasets/ds_ADL2_NYCRideAnalysis_csv')]",
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_NYCRideAnalysis')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Run NYC Ride Analysis Pipeline')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "From Web to ADL2",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "Load from web to ADL2",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "From ADL2 to Synapse stage",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "From Web to ADL2",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "Load from ADLS to stage",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "Load taxi zone",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "From ADL2 to Synapse stage",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "Load taxi zone",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "From stage to DW",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "Load taxi zone",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "Load from stage to dw",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "folder": {
+                    "name": "NYC Data Transformation"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-03-04T22:14:55Z"
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/pipelines/Load from web to ADL2')]",
+                "[concat(variables('factoryId'), '/pipelines/Load from ADLS to stage')]",
+                "[concat(variables('factoryId'), '/pipelines/Load taxi zone')]",
+                "[concat(variables('factoryId'), '/pipelines/Load from stage to dw')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Load from stage to dw')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Load_dw_FactCabTrip",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [
+                            {
+                                "activity": "Get stage storage account",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "Load_dw_FactCabTrip",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "ReadFromStageYellow": {},
+                                    "ReadFromStageGreen": {},
+                                    "ReadDimVendor": {},
+                                    "ReadDimRate": {},
+                                    "ReadDimLocationPU": {},
+                                    "ReadDimTripType": {},
+                                    "ReadDimPaymentType": {},
+                                    "ReadDimLocationDO": {},
+                                    "GetMaxCabTripKey": {},
+                                    "ReadDimCabType": {},
+                                    "InsertIntodwFactCabTrip": {
+                                        "DatabaseName": {
+                                            "value": "@activity('Get table to load').output.firstrow.SourceControl1",
+                                            "type": "Expression"
+                                        },
+                                        "SchemaName": {
+                                            "value": "@activity('Get table to load').output.firstrow.SourceControl2",
+                                            "type": "Expression"
+                                        },
+                                        "TableName": {
+                                            "value": "@activity('Get table to load').output.firstrow.SourceControl3",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "ls_transport_transformation_adl2",
+                                    "type": "LinkedServiceReference",
+                                    "parameters": {
+                                        "StorageAccount": {
+                                            "value": "@activity('Get stage storage account').output.firstrow.DestinationControl1",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                "folderPath": "stagearea"
+                            },
+                            "compute": {
+                                "coreCount": 16,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "Get stage storage account",
+                        "type": "Lookup",
+                        "dependsOn": [
+                            {
+                                "activity": "Get table to load",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": "SELECT DISTINCT\n    DestinationControl1\nFROM\n    [operation].[MetadataTableControl]\nWHERE\n    GroupName = 'NYC Ride Analysis'\n    AND GroupLoad = 'HTTP to ADL2 - 2'",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "firstRowOnly": true
+                        }
+                    },
+                    {
+                        "name": "Get table to load",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": "SELECT * FROM [operation].[MetadataTableControl] WHERE GroupName = 'NYC Ride Analysis' AND GroupLoad = 'Load Facts'",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "ds_Synapse_DataFlow",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "firstRowOnly": true
+                        }
+                    }
+                ],
+                "variables": {
+                    "StorageAccountName": {
+                        "type": "String",
+                        "defaultValue": "[StorageAccount]"
+                    }
+                },                
+                "folder": {
+                    "name": "NYC Data Transformation"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-03-11T15:43:45Z"
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/dataflows/Load_dw_FactCabTrip')]",
+                "[concat(variables('factoryId'), '/linkedServices/ls_transport_transformation_adl2')]",
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow')]"
+            ]
+        }
+    ]
+}
