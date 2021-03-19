@@ -86,7 +86,7 @@ Once you deployed Azure services and Synapse objects you need to deploy Azure Da
 
 Is necessary to upload a file into the storage account. Please fallow the instructions:
 
-1.1 - Download file named "taxi_zone_lookup.csv": [Dowload CSV file](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/4%20-%20Others/taxi_zone_lookup.csv)
+1.1 - Download file named "taxi_zone_lookup.csv": [Dowload CSV file](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/4%20-%20Others)
 
 2.2 - Upload file into this location in the storage account: "nyccabdata\ingestion\lookpup\taxi_zone_lookup.csv"
 
