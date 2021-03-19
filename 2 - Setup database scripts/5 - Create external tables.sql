@@ -1,3 +1,6 @@
+-- Copyright (c) Microsoft Corporation.
+-- Licensed under the MIT License.
+
 --need to create a master key once per database.
 CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'xxxxxxxx';
 
