@@ -14,7 +14,7 @@ The configuration table works with source columns and destination columns. The i
 
 Please check below image:
 
-![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/ConfigurationFile.png)
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/ConfigurationFile.png)
 
 The above case is a configuration record for reading a CSV file inside a storage account and then insert this file into a Synapse database, but it could be a diffent source
 and destination.
@@ -23,6 +23,6 @@ The records will be retrieve for a lookup acrtivity and you will use the columns
 
 Please check below image:
 
-![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/Parameters.png)
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/Parameters.png)
 
 Anything can be configured in the configuration table. This gives you a real flexibility to work in your pipelines and a real simple way.
