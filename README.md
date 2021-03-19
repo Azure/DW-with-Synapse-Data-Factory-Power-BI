@@ -22,7 +22,7 @@ We will split the solution deployment in:
 ## Azure Data Factory solution:
 ![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/AzureDataFactory.png)
 
-[Understanding configuration table](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Understanding%20configuration%20table.md)
+[Understanding configuration table](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Understanding%20configuration%20table.md)
 
 ## Requirements
 
@@ -37,7 +37,7 @@ The Azure Services can be created in Azure Portal or executing PowerShell script
 [Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/1%20-%20Setup%20-%20PowerShell%20scripts)
 
 Fallow below steps to create Azure Services:
-![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/AzureServices.png)
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/AzureServices.png)
 
 1.1 - Create resource group.ps1
 
@@ -56,7 +56,7 @@ Once you create Azure services, is necessary to deploy database objects. Please 
 [Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/2%20-%20Setup%20database%20scripts)
 
 Fallow below steps to create Azure Services:
-![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/SynapseObjects.png)
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/SynapseObjects.png)
 
 1.1 - Create schemas.sql
 
@@ -75,7 +75,7 @@ Fallow below steps to create Azure Services:
 # 3 - Deploy ARM template
 
 Once you deployed Azure services and Synapse objects you need to deploy Azure Data Factory ARM template. Please execute next steps:
-![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/DataFactoryPipeline.png)
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/DataFactoryPipeline.png)
 
 Once you deployed Azure services and Synapse objects you need to deploy Azure Data Factory ARM template. Please execute next steps:
 
