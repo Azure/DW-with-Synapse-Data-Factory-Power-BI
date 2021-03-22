@@ -3,7 +3,7 @@
 
 --1) Start dedicated SQL Pool
 
---2) Connect your Azure Data Studio, Management Studio or select develop tab in your Synapse workspace
+--2) Connect your Azure Data Studio, Management Studio or select develop tab in your Synapse workspace - DO NOT FORGET TO SELECT "TransportDW" database.
 
 --3) Execute below script:
 CREATE TABLE [operation].[MetadataTableControl](
