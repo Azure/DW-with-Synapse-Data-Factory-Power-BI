@@ -5,9 +5,6 @@
 ###########Create Azure components
 ##################################################################################################################
 
-##Connect to your Azure account
-Connect-AzAccount
-
 ##install AZ module
 if ($PSVersionTable.PSEdition -eq 'Desktop' -and (Get-Module -Name AzureRM -ListAvailable)) {
     Write-Warning -Message ('Az module not installed. Having both the AzureRM and ' +
@@ -16,21 +13,24 @@ if ($PSVersionTable.PSEdition -eq 'Desktop' -and (Get-Module -Name AzureRM -List
     Install-Module -Name Az -AllowClobber -Scope CurrentUser
 }
 
+##Connect to your Azure account
+Connect-AzAccount
+
 ##################################################################################################################
 ##install Az.Synapse
 install-module Az.Synapse
 Import-Module Az.Synapse
 
-#Create Synpase workspace
-$ResourceGroupName = "TransportationCompanyAnalytics"
-$Name = "transportsynapseanalytics"
+#IMPORTANT: PLEASE EXECUTE ONLY BELOW LINE AND FILL WITH PARAMETERS:
+New-AzSynapseWorkspace
+
+#User below parameters:
+$ResourceGroupName = "TransportationCompanyAnalytics2"
+$Name = "transportsynapseanalytics2"
 $Location = "eastus"
-$DefaultDataLakeStorageAccountName = "transsynapsestorage"
+$DefaultDataLakeStorageAccountName = "transsynapsestorage2"
 $DefaultDataLakeStorageFilesystem = "synapsecontainer"
 $User = "TransportSynapseAdmin"
-
-#IMPORTANT: PLEASE EXECUTE ONLY BELOW LINE AND FILL WITH ABOVE PARAMETERS:
-New-AzSynapseWorkspace
 
 ##################################################################################################################
 ##Grant IAM permission for Synapse Studio into storage account
