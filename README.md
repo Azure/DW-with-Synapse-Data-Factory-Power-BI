@@ -30,6 +30,8 @@ We will split the solution deployment in:
 - Permission to install PowerShell components in your local computer
 - A Power BI Free or Pro license
 
+You need around 1 hour to deploy entire solution.
+
 # 1 - Create Azure Services
 
 The Azure Services can be created in Azure Portal or executing PowerShell scripts:
