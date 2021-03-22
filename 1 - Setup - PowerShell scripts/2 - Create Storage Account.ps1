@@ -5,9 +5,6 @@
 ###########Create Azure components
 ##################################################################################################################
 
-##Connect to your Azure account
-Connect-AzAccount
-
 ##install AZ module
 if ($PSVersionTable.PSEdition -eq 'Desktop' -and (Get-Module -Name AzureRM -ListAvailable)) {
     Write-Warning -Message ('Az module not installed. Having both the AzureRM and ' +
@@ -15,6 +12,9 @@ if ($PSVersionTable.PSEdition -eq 'Desktop' -and (Get-Module -Name AzureRM -List
 } else {
     Install-Module -Name Az -AllowClobber -Scope CurrentUser
 }
+
+##Connect to your Azure account
+Connect-AzAccount
 
 ##################################################################################################################
 ##install Az.Storage
