@@ -1,4 +1,4 @@
-# Using Azure Synapse with Microsoft Power BI
+# Combining Azure Synapse with Microsoft Power BI
 
 This code will provive you a step-by-step guide to create a DataMart with transport information.
 
