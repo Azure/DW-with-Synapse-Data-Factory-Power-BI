@@ -91,7 +91,7 @@ CREATE TABLE dw.FactCabTrip
     StoreAndFwdFlag           varchar(1),
     RateKey                   int,
     PULocationKey             int,
-    DOLacationKey             int,
+    DOLocationKey             int,
     TripTypeKey               int,
     PaymentTypeKey            int,
     PassengerCount            tinyint,
