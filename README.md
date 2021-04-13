@@ -1,16 +1,16 @@
 # Combining Azure Synapse with Microsoft Power BI
 
-This code will provive you a step-by-step guide to create a DataMart with transport information.
+The code will provive you a step-by-step guide to create a DataMart with transport information.
 
-This DataMart is build using Azure Data Factory for ELT/ETL and Azure Synapse as database. The final stage is a Power BI report reading the information from DataMart.
+This DataMart is build using Azure Data Factory for ELT/ETL and Azure Synapse as database. The final stage is a Power BI report reading the information from Synapse database.
 
-Some important aspects in the solution is how to take advantage of dynamic content in Azure Data Factoty, creating a clean solution from end-to-end.
+Some important aspects in the solution is how to take advantage of dynamic content in Azure Data Factoty, creating a clean end-to-end solution.
 
 # What can be achieved?
 
-The idea of the solution is to speed-up ETL / ETL development and simplify how you code your pipelines in Azure Data Factory. Also how you can take advantage of using a combination of Azure Synapse and Power BI as your standard serving layer solution.
+The solution idea is to speed-up ETL / ETL development and simplify how you code your pipelines in Azure Data Factory. Also how you can take advantage of using a combination of Azure Synapse and Power BI as your standard serving layer solution.
 
-We will split the solution deployment in:
+The solution is splited in:
 
 1. Create Azure Services.
 2. Deploy database scripts.
