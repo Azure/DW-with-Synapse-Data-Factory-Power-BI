@@ -4,7 +4,7 @@ This code will provive you a step-by-step guide to create a DataMart with transp
 
 This DataMart is build using Azure Data Factory for ELT/ETL and Azure Synapse as database. The final stage is a Power BI report reading the information from DataMart.
 
-Some important aspects in the solution is how to take advantage of dynamic content in Azure Data Factoty, creating a clean solution from begining to end.
+Some important aspects in the solution is how to take advantage of dynamic content in Azure Data Factoty, creating a clean solution from end-to-end.
 
 # What can be achieved?
 
@@ -38,7 +38,7 @@ The Azure Services can be created in Azure Portal or executing PowerShell script
 
 [Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/1%20-%20Setup%20-%20PowerShell%20scripts)
 
-Fallow below steps to create Azure Services:
+Follow below steps to create Azure Services:
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/AzureServices.png)
 
 1.1 - Create resource group.ps1
@@ -57,7 +57,7 @@ Once you create Azure services, is necessary to deploy database objects. Please 
 
 [Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/2%20-%20Setup%20database%20scripts)
 
-Fallow below steps to create Azure Services:
+Follow below steps to create Azure Services:
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/SynapseObjects.png)
 
 1.1 - Create schemas.sql
