@@ -85,7 +85,7 @@ Once you deployed Azure services and Synapse objects you need to deploy Azure Da
 
 1.1 - Before deploy ARM template file, you need to replace some values. There are 6 points to replace the information before deploy scripts. Please replace these values carfully.
 
-2.2 - Once you replace the values with your own information, do the fallow:
+2.2 - Once you replace the values with your own information, do the follow:
   - Open your Azure Data Factory;
   - On manage tab, select "ARM Template" option;
   - Select option "Import ARM Template";
@@ -95,7 +95,7 @@ Once you deployed Azure services and Synapse objects you need to deploy Azure Da
 
 # 4 - Others steps
 
-Is necessary to upload a file into the storage account. Please fallow the instructions:
+Is necessary to upload a file into the storage account. Please follow the instructions:
 
 1.1 - Download file named "taxi_zone_lookup.csv": [Dowload CSV file](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/4%20-%20Others)
 
