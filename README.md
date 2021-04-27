@@ -83,7 +83,9 @@ Once you deployed Azure services and Synapse objects you need to deploy Azure Da
 
 [ARM template location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/3%20-%20ARM%20Template)
 
-1.1 - Before deploy ARM template file, you need to replace some values. There are 6 points to replace the information before deploy scripts. Please replace these values carfully.
+1.1 - Before deploy ARM template file, you need to replace some values. There are 6 points to replace the information before deploy scripts. Please replace these values carfully:
+
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/ReplaceValuesARM.png)
 
 2.2 - Once you replace the values with your own information, do the follow:
   - Open your Azure Data Factory;
@@ -92,6 +94,8 @@ Once you deployed Azure services and Synapse objects you need to deploy Azure Da
   - On "Custom Deployment" editor, select option "Build your own template in the editor";
   - Load the file "arm_template.json" and save;
   - Select the resource group, region and factory name (same name you deployed with PoweShell);
+
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/ArmTemplate.png)
 
 # 4 - Others steps
 
