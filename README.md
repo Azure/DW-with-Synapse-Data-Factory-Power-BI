@@ -17,15 +17,13 @@ The solution is splited in:
 3. Deploy Azure Data Factory ARM template.
 
 ## Final Power BI data model:
-![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/PBIModel.png)
-
-epa
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/PowerBIDataModel.png)
 
 ## General architecture:
-![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/SolutionArchitecture.png)
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/SolutionArchitecture.png)
 
 ## Azure Data Factory solution:
-![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/AzureDataFactory.png)
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/Support%20Files/AzureDataFactory.png)
 
 [Understanding configuration table](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Understanding%20configuration%20table.md)
 
