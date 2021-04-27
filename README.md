@@ -16,6 +16,9 @@ The solution is splited in:
 2. Deploy database scripts.
 3. Deploy Azure Data Factory ARM template.
 
+## Final Power BI data model:
+![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/PowerBIDataModel.png)
+
 ## General architecture:
 ![alt text](https://github.com/microsoft/Power-BI-ADF-Synapse/blob/main/Support%20Files/SolutionArchitecture.png)
 
