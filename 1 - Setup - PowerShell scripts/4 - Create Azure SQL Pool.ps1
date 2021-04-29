@@ -20,7 +20,7 @@ Install-Module Az.Synapse
 
 ##################################################################################################################
 ##create SQL Pool in Synapse
-$WorkspaceName = "transportsynapseanalytics"
+$WorkspaceName = "[Server Name]"
 $databasename = "TransportDW"
 
 New-AzSynapseSqlPool -WorkspaceName $WorkspaceName -Name $databasename -PerformanceLevel DW100c
