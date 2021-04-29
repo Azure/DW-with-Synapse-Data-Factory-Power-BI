@@ -129,11 +129,11 @@ This Power BI file is configured with incremental refresh. You can refresh Power
 
 # 6 - Help us to improve!
 
-Please check [Code of conduct](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/CODE_OF_CONDUCT.md)
+Please check: [Code of conduct](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/CODE_OF_CONDUCT.md)
 
-Please check [Security](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/SECURITY.md)
+Please check: [Security](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/SECURITY.md)
 
-Please check [Support](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/SUPPORT.md)
+Please check: [Support](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/SUPPORT.md)
 
 ## Contributing
 
