@@ -119,7 +119,7 @@ After process execution, open Power BI template file and fill the parameters val
 Open: [Power BI file template](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/5%20-%20Power%20BI)
 
 - RangeStart: '2019-01-01 00:00:00.000'
-- RangeEnd: '2019-01-02 00:00:00.000'
+- RangeEnd: '2019-01-01 23:59:59.000'
 - ServerName: [Use your server name]
 - DatabaseName: "TransportDW"
 
