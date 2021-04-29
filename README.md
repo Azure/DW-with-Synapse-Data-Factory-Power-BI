@@ -116,6 +116,8 @@ Is necessary to upload a file into the storage account. Please follow the instru
 
 After process execution, open Power BI template file and fill the parameters values:
 
+[Power BI file template](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/5%20-%20Power%20BI)
+
 - RangeStart: '2019-01-01 00:00:00.000'
 - RangeEnd: '2019-01-02 00:00:00.000'
 - ServerName: [Use your server name]
