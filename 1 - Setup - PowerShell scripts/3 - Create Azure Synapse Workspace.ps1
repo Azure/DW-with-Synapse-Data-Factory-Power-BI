@@ -25,10 +25,10 @@ Import-Module Az.Synapse
 New-AzSynapseWorkspace
 
 #User below parameters:
-$ResourceGroupName = "TransportationCompanyAnalytics2"
-$Name = "transportsynapseanalytics2"
+$ResourceGroupName = "TransportationCompanyAnalytics"
+$Name = "transportsynapseanalytics"
 $Location = "eastus"
-$DefaultDataLakeStorageAccountName = "transsynapsestorage2"
+$DefaultDataLakeStorageAccountName = "transsynapsestorage"
 $DefaultDataLakeStorageFilesystem = "synapsecontainer"
 $User = "TransportSynapseAdmin"
 
