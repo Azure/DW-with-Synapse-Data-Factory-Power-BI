@@ -19,4 +19,4 @@ Connect-AzAccount
 ##################################################################################################################
 #Create resource group (feel free to change the resource group name and region):
 #New-AzResourceGroup -Name <String> -Location <String>
-New-AzResourceGroup -Name TransportationCompanyAnalytics2 -Location "eastus"
+New-AzResourceGroup -Name TransportationCompanyAnalytics -Location "eastus"
