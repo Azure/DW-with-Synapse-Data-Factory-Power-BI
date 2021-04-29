@@ -25,7 +25,7 @@ The solution is splited in:
 ## Azure Data Factory solution:
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/Support%20Files/AzureDataFactory.png)
 
-[Understanding configuration table](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Understanding%20configuration%20table.md)
+Open: [Understanding configuration table](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Understanding%20configuration%20table.md)
 
 ## Requirements
 
@@ -39,7 +39,7 @@ You need around 1 hour to deploy entire solution.
 
 The Azure Services can be created in Azure Portal or executing PowerShell scripts:
 
-[Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/1%20-%20Setup%20-%20PowerShell%20scripts)
+Open: [Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/1%20-%20Setup%20-%20PowerShell%20scripts)
 
 Follow below steps to create Azure Services:
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/AzureServices.png)
@@ -58,7 +58,7 @@ Follow below steps to create Azure Services:
 
 Once you create Azure services, is necessary to deploy database objects. Please execute next steps:
 
-[Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/2%20-%20Setup%20database%20scripts)
+Open: [Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/2%20-%20Setup%20database%20scripts)
 
 Follow below steps to create Azure Services:
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/SynapseObjects.png)
@@ -84,7 +84,7 @@ This is the ARM template you are about to deploy:
 
 Once you deployed Azure services and Synapse objects you need to deploy Azure Data Factory ARM template. Please execute next steps:
 
-[ARM template location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/3%20-%20ARM%20Template)
+Open: [ARM template location](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/3%20-%20ARM%20Template)
 
 1.1 - Before deploy ARM template file, you need to replace some values. There are 6 points to replace the information before deploy scripts. Please replace these values carfully:
 
@@ -116,7 +116,7 @@ Is necessary to upload a file into the storage account. Please follow the instru
 
 After process execution, open Power BI template file and fill the parameters values:
 
-[Power BI file template](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/5%20-%20Power%20BI)
+Open: [Power BI file template](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/5%20-%20Power%20BI)
 
 - RangeStart: '2019-01-01 00:00:00.000'
 - RangeEnd: '2019-01-02 00:00:00.000'
