@@ -23,7 +23,7 @@ The solution is splited in:
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/SolutionArchitecture.png)
 
 ## Azure Data Factory solution:
-![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/Support%20Files/AzureDataFactory.png)
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/AzureDataFactory.png)
 
 [Understanding configuration table](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Understanding%20configuration%20table.md)
 
