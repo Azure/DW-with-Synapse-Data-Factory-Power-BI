@@ -100,6 +100,10 @@ Once you deployed Azure services and Synapse objects you need to deploy Azure Da
 
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/ArmTemplate.png)
 
+3.3 - Once deploy is done, will be necessary to process the pipeline:
+
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/ArmTemplate.png)
+
 # 4 - Others steps
 
 Is necessary to upload a file into the storage account. Please follow the instructions:
@@ -108,7 +112,20 @@ Is necessary to upload a file into the storage account. Please follow the instru
 
 2.2 - Upload file into this location in the storage account: "nyccabdata\ingestion\lookpup\taxi_zone_lookup.csv"
 
-# 5 - Help us to improve!
+# 5 - Power BI
+
+After process execution, open Power BI template file and fill the parameters values:
+
+- RangeStart: '2019-01-01 00:00:00.000'
+- RangeEnd: '2019-01-02 00:00:00.000'
+- ServerName: [Use your server name]
+- DatabaseName: "TransportDW"
+
+This Power BI file is configured with incremental refresh. You can refresh Power BI file and then deploy it to Power BI Service.
+
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/PowerBIParameters.png)
+
+# 6 - Help us to improve!
 
 Please check [Code of conduct](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/CODE_OF_CONDUCT.md)
 
