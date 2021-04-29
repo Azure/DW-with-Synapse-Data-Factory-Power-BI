@@ -23,7 +23,7 @@ Import-Module Az.Storage
 
 #Create Data Lake Storage Gen2:
 $ResourceGroupName = "TransportationCompanyAnalytics"
-$Name = "storageaccountname"
+$Name = "[Storage Account Name]"
 $SkuName = "Standard_LRS"
 $Location = "eastus"
 $kind = "StorageV2"
@@ -33,7 +33,7 @@ New-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $Name -Location
 ##################################################################################################################
 ##create container in storage account 
 Select-AzSubscription -SubscriptionId xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-$Name = "storageaccountname"
+$Name = "[Storage Account Name]"
 $key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"        
 $ctx = New-AzStorageContext -StorageAccountName $Name -StorageAccountKey $key
 $filesystemName = "synapsecontainer"
@@ -41,7 +41,7 @@ New-AzStorageContainer -Context $ctx -Name $filesystemName
 
 ##create container in storage account 
 Select-AzSubscription -SubscriptionId xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-$Name = "storageaccountname"
+$Name = "[Storage Account Name]"
 $key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"        
 $ctx = New-AzStorageContext -StorageAccountName $Name -StorageAccountKey $key
 $filesystemName = "nyccabdata"
@@ -70,7 +70,7 @@ New-AzDataLakeGen2Item -Context $ctx -FileSystem $filesystemName -Path $dirname 
 
 ##Create container in data lake
 Select-AzSubscription -SubscriptionId xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-$Name = "transsynapsestorage"
+$Name = "[Storage Account Name]"
 $key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 $ctx = New-AzStorageContext -StorageAccountName $Name -StorageAccountKey $key
 $filesystemName = "stagearea"
