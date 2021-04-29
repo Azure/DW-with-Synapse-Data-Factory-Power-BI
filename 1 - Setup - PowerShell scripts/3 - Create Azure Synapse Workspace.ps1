@@ -26,7 +26,7 @@ New-AzSynapseWorkspace
 
 #User below parameters:
 $ResourceGroupName = "TransportationCompanyAnalytics"
-$Name = "transportsynapseanalytics"
+$Name = "[Server Name]"
 $Location = "eastus"
 $DefaultDataLakeStorageAccountName = "[Storage Account Name]"
 $DefaultDataLakeStorageFilesystem = "synapsecontainer"
