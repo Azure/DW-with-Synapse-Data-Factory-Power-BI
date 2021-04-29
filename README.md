@@ -123,11 +123,11 @@ Open: [Power BI file template](https://github.com/Azure/DW-with-Synapse-Data-Fac
 - ServerName: [Use your server name]
 - DatabaseName: "TransportDW"
 
-![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/PowerBIFile.png)
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/PowerBIParameters.png)
 
 This Power BI file is configured with incremental refresh. You can refresh Power BI file and then deploy it to Power BI Service.
 
-![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/PowerBIParameters.png)
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/PowerBIFile.png)
 
 # 6 - Help us to improve!
 
