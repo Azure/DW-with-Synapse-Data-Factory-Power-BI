@@ -102,7 +102,7 @@ Open: [ARM template location](https://github.com/Azure/DW-with-Synapse-Data-Fact
 
 3. Once deploy is done, will be necessary to process the pipeline:
 
-![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/ArmTemplate.png)
+![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/RunPipeline.png)
 
 # 4 - Others steps
 
