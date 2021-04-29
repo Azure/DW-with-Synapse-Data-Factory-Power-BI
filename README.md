@@ -44,15 +44,15 @@ Open: [Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-P
 Follow below steps to create Azure Services:
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/AzureServices.png)
 
-1.1 - Create resource group.ps1
+1. Create resource group.ps1
 
-2.2 - Create Storage Account.ps1
+2. Create Storage Account.ps1
 
-3.3 - Create Azure Synapse Workspace.ps1
+3. Create Azure Synapse Workspace.ps1
 
-4.4 - Create Azure SQL Pool.ps1
+4. Create Azure SQL Pool.ps1
 
-5.5 - Create Azure Data Factory.ps1
+5. Create Azure Data Factory.ps1
 
 # 2 - Create Synapse objects
 
@@ -63,19 +63,19 @@ Open: [Scripts location](https://github.com/Azure/DW-with-Synapse-Data-Factory-P
 Follow below steps to create Azure Services:
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/SynapseObjects.png)
 
-1.1 - Create schemas.sql
+1. Create schemas.sql
 
-2.2 - Create operational tables.sql
+2. Create operational tables.sql
 
-3.3 - Create data warehouse tables.sql
+3. Create data warehouse tables.sql
 
-4.4 - Create stage tables.sql
+4. Create stage tables.sql
 
-5.5 - Create external tables.sql
+5. Create external tables.sql
 
-6.6 - Insert dimensions data.sql
+6. Insert dimensions data.sql
 
-7.7 - Insert configuration table.sql
+7. Insert configuration table.sql
 
 # 3 - Deploy ARM template
 
@@ -90,7 +90,7 @@ Open: [ARM template location](https://github.com/Azure/DW-with-Synapse-Data-Fact
 
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/ReplaceValuesARM.png)
 
-2.2 - Once you replace the values with your own information, do the follow:
+2. Once you replace the values with your own information, do the follow:
   - Open your Azure Data Factory;
   - On manage tab, select "ARM Template" option;
   - Select option "Import ARM Template";
@@ -100,7 +100,7 @@ Open: [ARM template location](https://github.com/Azure/DW-with-Synapse-Data-Fact
 
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/ArmTemplate.png)
 
-3.3 - Once deploy is done, will be necessary to process the pipeline:
+3. Once deploy is done, will be necessary to process the pipeline:
 
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/ArmTemplate.png)
 
@@ -108,9 +108,9 @@ Open: [ARM template location](https://github.com/Azure/DW-with-Synapse-Data-Fact
 
 Is necessary to upload a file into the storage account. Please follow the instructions:
 
-1.1 - Download file named "taxi_zone_lookup.csv": [Dowload CSV file](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/4%20-%20Others)
+1. Download file named "taxi_zone_lookup.csv": [Dowload CSV file](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/tree/main/4%20-%20Others)
 
-2.2 - Upload file into this location in the storage account: "nyccabdata\ingestion\lookpup\taxi_zone_lookup.csv"
+2. Upload file into this location in the storage account: "nyccabdata\ingestion\lookpup\taxi_zone_lookup.csv"
 
 # 5 - Power BI
 
