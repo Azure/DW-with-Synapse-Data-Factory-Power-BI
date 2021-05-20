@@ -1,20 +1,21 @@
-#1) Replace storage account key in row 14 with your storage account key value:
-#Insert your storage account key. [Replace with your storage account key]
+#1) Replace storage account key:
+#Search for "[Replace with your storage account key]" and then replace with your storage account key.
 
 #2) Replace server value for dataset: "ds_Synapse_DataFlow_Var"
-#ServerName value from "[ServerName].sql.azuresynapse.net" to  your Synapse server name:
+#Search for "[ServerName].sql.azuresynapse.net" and then replace with your Synapse server name.
 
 #3) Replace server value for linked server: "ls_Synapse_TransportDW"
-#ServerName value from "[ServerName].sql.azuresynapse.net" to  your Synapse server name:
+#Search for "[ServerName].sql.azuresynapse.net" and then replace with your Synapse server name.
 
 #4) Replace server value for linked server: "ls_Synapse_Operation"
-#ServerName value from "[ServerName].sql.azuresynapse.net" to  your Synapse server name:
+#Search for "[ServerName].sql.azuresynapse.net" and then replace with your Synapse server name.
 
-#5) Storage account for datasets: "ds_ADL2_NYCRideAnalysis_parquet" and "ds_ADL2_NYCRideAnalysis_csv":
-#StorageAccount value for "[StorageAccount].
+#5) Replace Storage account for datasets: "ds_ADL2_NYCRideAnalysis_parquet" and "ds_ADL2_NYCRideAnalysis_csv":
+#Search for "[StorageAccount] and then replace with your "StorageAccount" name.
 
-#6) Search for "[StorageAccount]" and replace with your storage account name.
+#6) Search for "[StorageAccount]" and then replace with your storage account name.
 
+#Code from next row:
 {
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
@@ -324,7 +325,7 @@
                     "referenceName": "ls_Synapse_TransportDW",
                     "type": "LinkedServiceReference",
                     "parameters": {
-                        "UserName": "TransportSynapseAdmin"
+                        "username": "TransportSynapseAdmin"
                     }
                 },
                 "folder": {
@@ -505,25 +506,6 @@
             ]
         },
         {
-            "name": "[concat(parameters('factoryName'), '/TransportationIntegrationRuntime')]",
-            "type": "Microsoft.DataFactory/factories/integrationRuntimes",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "type": "Managed",
-                "typeProperties": {
-                    "computeProperties": {
-                        "location": "AutoResolve",
-                        "dataFlowProperties": {
-                            "computeType": "General",
-                            "coreCount": 16,
-                            "timeToLive": 10
-                        }
-                    }
-                }
-            },
-            "dependsOn": []
-        },
-        {
             "name": "[concat(parameters('factoryName'), '/ls_transport_transformation_adl2')]",
             "type": "Microsoft.DataFactory/factories/linkedServices",
             "apiVersion": "2018-06-01",
@@ -625,6 +607,26 @@
                 "type": "AzureSqlDW",
                 "typeProperties": {
                     "connectionString": "[parameters('ls_Synapse_Operation_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TransportationIntegrationRuntime')]",
+            "type": "Microsoft.DataFactory/factories/integrationRuntimes",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "Managed",
+                "typeProperties": {
+                    "computeProperties": {
+                        "location": "AutoResolve",
+                        "dataFlowProperties": {
+                            "computeType": "MemoryOptimized",
+                            "coreCount": 32,
+                            "timeToLive": 10,
+                            "cleanup": true
+                        }
+                    }
                 }
             },
             "dependsOn": []
@@ -758,7 +760,7 @@
                             "name": "GetDimCabType"
                         }
                     ],
-                    "script": "source(output(\n\t\tVendorID as integer,\n\t\tCabTypeID as integer,\n\t\tLpepPickupDatetime as timestamp,\n\t\tLpepDropoffDatetime as timestamp,\n\t\tStoreAndFwdFlag as string,\n\t\tRatecodeID as integer,\n\t\tPULocationID as integer,\n\t\tDOLocationID as integer,\n\t\tPassengerCount as integer,\n\t\tTripDistance as decimal(10,2),\n\t\tFareAmount as decimal(10,2),\n\t\tExtra as decimal(10,2),\n\t\tMtaTax as decimal(10,2),\n\t\tTipAmount as decimal(10,2),\n\t\tTollsAmount as decimal(10,2),\n\t\tImprovementSurcharge as decimal(10,2),\n\t\tTotalAmount as decimal(10,2),\n\t\tPaymentoType as integer,\n\t\tTripType as integer,\n\t\tCongestionSurcharge as decimal(10,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT\\n    CONVERT(INT,VendorID)                           AS VendorID,\\n    1                                               AS CabTypeID,\\n    CONVERT(DATETIME,lpep_pickup_datetime)          AS LpepPickupDatetime,\\n    CONVERT(DATETIME,lpep_dropoff_datetime)         AS LpepDropoffDatetime,\\n    store_and_fwd_flag                              AS StoreAndFwdFlag,\\n    CONVERT(INT,RatecodeID)                         AS RatecodeID,\\n    CONVERT(INT,PULocationID)                       AS PULocationID,\\n    CONVERT(INT,DOLocationID)                       AS DOLocationID,\\n    CONVERT(INT,passenger_count)                    AS PassengerCount,\\n    CONVERT(DECIMAL(10,2),trip_distance)            AS TripDistance,\\n    CONVERT(DECIMAL(10,2),fare_amount)              AS FareAmount,\\n    CONVERT(DECIMAL(10,2),extra)                    AS Extra,\\n    CONVERT(DECIMAL(10,2),mta_tax)                  AS MtaTax,\\n    CONVERT(DECIMAL(10,2),tip_amount)               AS TipAmount,\\n    CONVERT(DECIMAL(10,2),tolls_amount)             AS TollsAmount,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(improvement_surcharge,\\'\\') AS DECIMAL(10,2))) AS improvement_surcharge,\\n    CONVERT(DECIMAL(10,2),total_amount)             AS TotalAmount,\\n    CONVERT(INT,payment_type)                       AS PaymentoType,\\n    1                                               AS TripType,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(congestion_surcharge,\\'\\') AS DECIMAL(10,2)))  AS CongestionSurcharge\\nFROM\\n    stage.NYCCabTrip_Yellow',\n\tformat: 'query',\n\tstaged: false) ~> ReadFromStageYellow\nsource(output(\n\t\tVendorID as integer,\n\t\tCabTypeID as integer,\n\t\tLpepPickupDatetime as timestamp,\n\t\tLpepDropoffDatetime as timestamp,\n\t\tStoreAndFwdFlag as string,\n\t\tRatecodeID as integer,\n\t\tPULocationID as integer,\n\t\tDOLocationID as integer,\n\t\tPassengerCount as integer,\n\t\tTripDistance as decimal(10,2),\n\t\tFareAmount as decimal(10,2),\n\t\tExtra as decimal(10,2),\n\t\tMtaTax as decimal(10,2),\n\t\tTipAmount as decimal(10,2),\n\t\tTollsAmount as decimal(10,2),\n\t\tImprovementSurcharge as decimal(10,2),\n\t\tTotalAmount as decimal(10,2),\n\t\tPaymentoType as integer,\n\t\tTripType as integer,\n\t\tCongestionSurcharge as decimal(10,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT\\n    CONVERT(INT,VendorID)                           AS VendorID,\\n    2                                               AS CabTypeID,\\n    CONVERT(DATETIME,lpep_pickup_datetime)          AS LpepPickupDatetime,\\n    CONVERT(DATETIME,lpep_dropoff_datetime)         AS LpepDropoffDatetime,\\n    store_and_fwd_flag                              AS StoreAndFwdFlag,\\n    CONVERT(INT,RatecodeID)                         AS RatecodeID,\\n    CONVERT(INT,PULocationID)                       AS PULocationID,\\n    CONVERT(INT,DOLocationID)                       AS DOLocationID,\\n    CONVERT(INT,passenger_count)                    AS PassengerCount,\\n    CONVERT(DECIMAL(10,2),trip_distance)            AS TripDistance,\\n    CONVERT(DECIMAL(10,2),fare_amount)              AS FareAmount,\\n    CONVERT(DECIMAL(10,2),extra)                    AS Extra,\\n    CONVERT(DECIMAL(10,2),mta_tax)                  AS MtaTax,\\n    CONVERT(DECIMAL(10,2),tip_amount)               AS TipAmount,\\n    CONVERT(DECIMAL(10,2),tolls_amount)             AS TollsAmount,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(improvement_surcharge,\\'\\') AS DECIMAL(10,2))) AS improvement_surcharge,\\n    CONVERT(DECIMAL(10,2),total_amount)             AS TotalAmount,\\n    CONVERT(INT,payment_type)                       AS PaymentoType,\\n    CONVERT(INT,trip_type)                          AS TripType,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(congestion_surcharge,\\'\\') AS DECIMAL(10,2)))  AS CongestionSurcharge\\nFROM\\n    stage.NYCCabTrip_Green',\n\tformat: 'query',\n\tstaged: false) ~> ReadFromStageGreen\nsource(output(\n\t\tVendorKey as integer,\n\t\tVendorID as integer,\n\t\tVendorDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimVendor',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimVendor\nsource(output(\n\t\tRateKey as integer,\n\t\tRateID as integer,\n\t\tRateDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimRate WHERE RateID IS NOT NULL',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimRate\nsource(output(\n\t\tLocationKey as integer,\n\t\tLocationID as integer,\n\t\tBorough as string,\n\t\tZone as string,\n\t\tservice_zone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimLocationPU\nsource(output(\n\t\tTripTypeKey as integer,\n\t\tTripTypeID as integer,\n\t\tTripTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimTripType',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimTripType\nsource(output(\n\t\tPaymentTypeKey as integer,\n\t\tPaymentTypeID as integer,\n\t\tPaymentTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimPaymentType',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimPaymentType\nsource(output(\n\t\tLocationKey as integer,\n\t\tLocationID as integer,\n\t\tBorough as string,\n\t\tZone as string,\n\t\tservice_zone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimLocationDO\nsource(output(\n\t\tMaxCabTripKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT MaxCabTripKey = ISNULL(MAX(CabTripKey),0) from [dw].[FactCabTrip]',\n\tformat: 'query',\n\tstaged: false) ~> GetMaxCabTripKey\nsource(output(\n\t\tCabTypeKey as integer,\n\t\tCabTYpeID as integer,\n\t\tCabTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM [dw].[DimCabType]',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimCabType\nReadFromStageYellow, ReadFromStageGreen union(byName: true)~> UnionYellowandGreen\nUnionYellowandGreen, GetMaxCabTripKey join(1 == 1,\n\tjoinType:'cross',\n\tbroadcast: 'auto')~> JoinMaxValueCabTripKey\nJoinMaxValueCabTripKey keyGenerate(output(CreateCabTripKey as long),\n\tstartAt: 1L) ~> GenerateCabTripKey\nGenerateCabTripKey derive(CabTripKey = CreateCabTripKey + MaxCabTripKey) ~> GenerateCabTripKeyDefault\nGenerateCabTripKeyDefault, ReadDimVendor lookup(UnionYellowandGreen@VendorID == ReadDimVendor@VendorID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetVendorKey\nGetVendorKey, ReadDimRate lookup(RatecodeID == RateID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetRateKey\nGetRateKey, ReadDimLocationPU lookup(PULocationID == LocationID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetPULocationKey\nGetPULocationKey, ReadDimLocationDO lookup(DOLocationID == ReadDimLocationDO@LocationID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDOLocationKey\nGetDOLocationKey, ReadDimTripType lookup(TripType == TripTypeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDimTripType\nGetDimTripType, ReadDimPaymentType lookup(PaymentoType == PaymentTypeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetPaymentType\nGetDimCabType alterRow(insertIf(1==1)) ~> VerifyInsert\nGetPaymentType, ReadDimCabType lookup(UnionYellowandGreen@CabTypeID == ReadDimCabType@CabTYpeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDimCabType\nVerifyInsert sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tmapColumn(\n\t\tCabTripKey,\n\t\tVendorKey,\n\t\tCabTypeKey,\n\t\tLpepPickupDatetime,\n\t\tLpepDropoffDatetime,\n\t\tStoreAndFwdFlag,\n\t\tRateKey,\n\t\tPULocationKey = ReadDimLocationPU@LocationKey,\n\t\tDOLocationKey = ReadDimLocationDO@LocationKey,\n\t\tTripTypeKey,\n\t\tPaymentTypeKey,\n\t\tPassengerCount,\n\t\tTripDistance,\n\t\tFareAmount,\n\t\tExtra,\n\t\tMtaTax,\n\t\tTipAmount,\n\t\tTollsAmount,\n\t\tImprovementSurcharge,\n\t\tTotalAmount\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1) ~> InsertIntodwFactCabTrip"
+                    "script": "source(output(\n\t\tVendorID as integer,\n\t\tCabTypeID as integer,\n\t\tLpepPickupDatetime as timestamp,\n\t\tLpepDropoffDatetime as timestamp,\n\t\tStoreAndFwdFlag as string,\n\t\tRatecodeID as integer,\n\t\tPULocationID as integer,\n\t\tDOLocationID as integer,\n\t\tPassengerCount as integer,\n\t\tTripDistance as decimal(10,2),\n\t\tFareAmount as decimal(10,2),\n\t\tExtra as decimal(10,2),\n\t\tMtaTax as decimal(10,2),\n\t\tTipAmount as decimal(10,2),\n\t\tTollsAmount as decimal(10,2),\n\t\tImprovementSurcharge as decimal(10,2),\n\t\tTotalAmount as decimal(10,2),\n\t\tPaymentoType as integer,\n\t\tTripType as integer,\n\t\tCongestionSurcharge as decimal(10,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT\\n    CONVERT(INT,VendorID)                           AS VendorID,\\n    1                                               AS CabTypeID,\\n    CONVERT(DATETIME,lpep_pickup_datetime)          AS LpepPickupDatetime,\\n    CONVERT(DATETIME,lpep_dropoff_datetime)         AS LpepDropoffDatetime,\\n    store_and_fwd_flag                              AS StoreAndFwdFlag,\\n    CONVERT(INT,RatecodeID)                         AS RatecodeID,\\n    CONVERT(INT,PULocationID)                       AS PULocationID,\\n    CONVERT(INT,DOLocationID)                       AS DOLocationID,\\n    CONVERT(INT,passenger_count)                    AS PassengerCount,\\n    CONVERT(DECIMAL(10,2),trip_distance)            AS TripDistance,\\n    CONVERT(DECIMAL(10,2),fare_amount)              AS FareAmount,\\n    CONVERT(DECIMAL(10,2),extra)                    AS Extra,\\n    CONVERT(DECIMAL(10,2),mta_tax)                  AS MtaTax,\\n    CONVERT(DECIMAL(10,2),tip_amount)               AS TipAmount,\\n    CONVERT(DECIMAL(10,2),tolls_amount)             AS TollsAmount,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(improvement_surcharge,\\'\\') AS DECIMAL(10,2))) AS improvement_surcharge,\\n    CONVERT(DECIMAL(10,2),total_amount)             AS TotalAmount,\\n    CONVERT(INT,payment_type)                       AS PaymentoType,\\n    1                                               AS TripType,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(congestion_surcharge,\\'\\') AS DECIMAL(10,2)))  AS CongestionSurcharge\\nFROM\\n    stage.NYCCabTrip_Yellow',\n\tformat: 'query',\n\tstaged: false) ~> ReadFromStageYellow\nsource(output(\n\t\tVendorID as integer,\n\t\tCabTypeID as integer,\n\t\tLpepPickupDatetime as timestamp,\n\t\tLpepDropoffDatetime as timestamp,\n\t\tStoreAndFwdFlag as string,\n\t\tRatecodeID as integer,\n\t\tPULocationID as integer,\n\t\tDOLocationID as integer,\n\t\tPassengerCount as integer,\n\t\tTripDistance as decimal(10,2),\n\t\tFareAmount as decimal(10,2),\n\t\tExtra as decimal(10,2),\n\t\tMtaTax as decimal(10,2),\n\t\tTipAmount as decimal(10,2),\n\t\tTollsAmount as decimal(10,2),\n\t\tImprovementSurcharge as decimal(10,2),\n\t\tTotalAmount as decimal(10,2),\n\t\tPaymentoType as integer,\n\t\tTripType as integer,\n\t\tCongestionSurcharge as decimal(10,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT\\n    CONVERT(INT,VendorID)                           AS VendorID,\\n    2                                               AS CabTypeID,\\n    CONVERT(DATETIME,lpep_pickup_datetime)          AS LpepPickupDatetime,\\n    CONVERT(DATETIME,lpep_dropoff_datetime)         AS LpepDropoffDatetime,\\n    store_and_fwd_flag                              AS StoreAndFwdFlag,\\n    CONVERT(INT,RatecodeID)                         AS RatecodeID,\\n    CONVERT(INT,PULocationID)                       AS PULocationID,\\n    CONVERT(INT,DOLocationID)                       AS DOLocationID,\\n    CONVERT(INT,passenger_count)                    AS PassengerCount,\\n    CONVERT(DECIMAL(10,2),trip_distance)            AS TripDistance,\\n    CONVERT(DECIMAL(10,2),fare_amount)              AS FareAmount,\\n    CONVERT(DECIMAL(10,2),extra)                    AS Extra,\\n    CONVERT(DECIMAL(10,2),mta_tax)                  AS MtaTax,\\n    CONVERT(DECIMAL(10,2),tip_amount)               AS TipAmount,\\n    CONVERT(DECIMAL(10,2),tolls_amount)             AS TollsAmount,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(improvement_surcharge,\\'\\') AS DECIMAL(10,2))) AS improvement_surcharge,\\n    CONVERT(DECIMAL(10,2),total_amount)             AS TotalAmount,\\n    CONVERT(INT,payment_type)                       AS PaymentoType,\\n    CONVERT(INT,trip_type)                          AS TripType,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(congestion_surcharge,\\'\\') AS DECIMAL(10,2)))  AS CongestionSurcharge\\nFROM\\n    stage.NYCCabTrip_Green',\n\tformat: 'query',\n\tstaged: false) ~> ReadFromStageGreen\nsource(output(\n\t\tVendorKey as integer,\n\t\tVendorID as integer,\n\t\tVendorDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimVendor',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimVendor\nsource(output(\n\t\tRateKey as integer,\n\t\tRateID as integer,\n\t\tRateDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimRate WHERE RateID IS NOT NULL',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimRate\nsource(output(\n\t\tLocationKey as integer,\n\t\tLocationID as integer,\n\t\tBorough as string,\n\t\tZone as string,\n\t\tservice_zone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimLocationPU\nsource(output(\n\t\tTripTypeKey as integer,\n\t\tTripTypeID as integer,\n\t\tTripTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimTripType',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimTripType\nsource(output(\n\t\tPaymentTypeKey as integer,\n\t\tPaymentTypeID as integer,\n\t\tPaymentTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimPaymentType',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimPaymentType\nsource(output(\n\t\tLocationKey as integer,\n\t\tLocationID as integer,\n\t\tBorough as string,\n\t\tZone as string,\n\t\tservice_zone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimLocationDO\nsource(output(\n\t\tMaxCabTripKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT MaxCabTripKey = ISNULL(MAX(CabTripKey),0) from [dw].[FactCabTrip]',\n\tformat: 'query',\n\tstaged: false) ~> GetMaxCabTripKey\nsource(output(\n\t\tCabTypeKey as integer,\n\t\tCabTYpeID as integer,\n\t\tCabTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM [dw].[DimCabType]',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimCabType\nReadFromStageYellow, ReadFromStageGreen union(byName: true)~> UnionYellowandGreen\nUnionYellowandGreen, GetMaxCabTripKey join(1 == 1,\n\tjoinType:'cross',\n\tbroadcast: 'auto')~> JoinMaxValueCabTripKey\nJoinMaxValueCabTripKey keyGenerate(output(CreateCabTripKey as long),\n\tstartAt: 1L) ~> GenerateCabTripKey\nGenerateCabTripKey derive(CabTripKey = CreateCabTripKey + MaxCabTripKey) ~> GenerateCabTripKeyDefault\nGetDOLocationKey, ReadDimVendor lookup(UnionYellowandGreen@VendorID == ReadDimVendor@VendorID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetVendorKey\nGetVendorKey, ReadDimRate lookup(RatecodeID == RateID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetRateKey\nGenerateCabTripKeyDefault, ReadDimLocationPU lookup(PULocationID == LocationID,\n\tmultiple: false,\n\tpickup: 'any',\n\tpartitionBy('hash', 300,\n\t\tPULocationID\n\t),\n\tbroadcast: 'auto')~> GetPULocationKey\nGetPULocationKey, ReadDimLocationDO lookup(DOLocationID == ReadDimLocationDO@LocationID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDOLocationKey\nGetRateKey, ReadDimTripType lookup(TripType == TripTypeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDimTripType\nGetDimTripType, ReadDimPaymentType lookup(PaymentoType == PaymentTypeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetPaymentType\nGetDimCabType alterRow(insertIf(1==1)) ~> VerifyInsert\nGetPaymentType, ReadDimCabType lookup(UnionYellowandGreen@CabTypeID == ReadDimCabType@CabTYpeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDimCabType\nVerifyInsert sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tpreSQLs:['TRUNCATE TABLE dw.FactCabTrip'],\n\tmapColumn(\n\t\tCabTripKey,\n\t\tVendorKey,\n\t\tCabTypeKey,\n\t\tLpepPickupDatetime,\n\t\tLpepDropoffDatetime,\n\t\tStoreAndFwdFlag,\n\t\tRateKey,\n\t\tPULocationKey = ReadDimLocationPU@LocationKey,\n\t\tDOLocationKey = ReadDimLocationDO@LocationKey,\n\t\tTripTypeKey,\n\t\tPaymentTypeKey,\n\t\tPassengerCount,\n\t\tTripDistance,\n\t\tFareAmount,\n\t\tExtra,\n\t\tMtaTax,\n\t\tTipAmount,\n\t\tTollsAmount,\n\t\tImprovementSurcharge,\n\t\tTotalAmount\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError') ~> InsertIntodwFactCabTrip"
                 }
             },
             "dependsOn": [
@@ -1566,7 +1568,7 @@
                     "name": "NYC Data Transformation"
                 },
                 "annotations": [],
-                "lastPublishTime": "2021-03-09T19:57:21Z"
+                "lastPublishTime": "2021-03-16T15:38:03Z"
             },
             "dependsOn": [
                 "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow_Var')]",
@@ -1662,7 +1664,7 @@
                     "name": "NYC Data Transformation"
                 },
                 "annotations": [],
-                "lastPublishTime": "2021-03-04T22:14:55Z"
+                "lastPublishTime": "2021-03-17T16:38:04Z"
             },
             "dependsOn": [
                 "[concat(variables('factoryId'), '/pipelines/Load from web to ADL2')]",
@@ -1741,11 +1743,11 @@
                                 },
                                 "folderPath": "stagearea"
                             },
-                            "compute": {
-                                "coreCount": 16,
-                                "computeType": "General"
+                            "integrationRuntime": {
+                                "referenceName": "TransportationIntegrationRuntime",
+                                "type": "IntegrationRuntimeReference"
                             },
-                            "traceLevel": "Fine"
+                            "traceLevel": "Coarse"
                         }
                     },
                     {
@@ -1815,16 +1817,17 @@
                         "type": "String",
                         "defaultValue": "[StorageAccount]"
                     }
-                },                
+                },   
                 "folder": {
                     "name": "NYC Data Transformation"
                 },
                 "annotations": [],
-                "lastPublishTime": "2021-03-11T15:43:45Z"
+                "lastPublishTime": "2021-05-07T20:16:57Z"
             },
             "dependsOn": [
                 "[concat(variables('factoryId'), '/dataflows/Load_dw_FactCabTrip')]",
                 "[concat(variables('factoryId'), '/linkedServices/ls_transport_transformation_adl2')]",
+                "[concat(variables('factoryId'), '/integrationRuntimes/TransportationIntegrationRuntime')]",
                 "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow')]"
             ]
         }
