@@ -1,6 +1,9 @@
 -- Copyright (c) Microsoft Corporation.
 -- Licensed under the MIT License.
 
+## IMPORTANT!! ##
+## YOU NEED TO CHANGE STORAGE ACCOUNT NAME ON LINE 22
+
 --need to create a master key once per database.
 CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'xxxxxxxx';
 
@@ -16,7 +19,7 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'transportdw_storageaccountname_dfs_core_windows')
 	CREATE EXTERNAL DATA SOURCE [transportdw_storageaccountname_dfs_core_windows]
 	WITH (                               
-		LOCATION   = 'abfss://nyccabdata@storageaccountname.dfs.core.windows.net', 
+		LOCATION   = 'abfss://nyccabdata@[**Storage Account Name**].dfs.core.windows.net', 
 		TYPE       = HADOOP, 
 		CREDENTIAL = SynapseManagedIdentity 
 	)
