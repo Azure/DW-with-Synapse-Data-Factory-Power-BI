@@ -1,3 +1,7 @@
+## IMPORTANT!! ##
+
+####Please...just follow 6 below steps before deploy this ARM template!!
+
 #1) Replace storage account key:
 #Search for "[Replace with your storage account key]" and then replace with your storage account key.
 
@@ -207,7 +211,7 @@
                 "parameters": {
                     "StorageAccount": {
                         "type": "string",
-                        "defaultValue": "[StorageAccount]"
+                        "defaultValue": "transsynapsestorage3"
                     },
                     "ContainerName": {
                         "type": "string",
@@ -269,7 +273,7 @@
                 "parameters": {
                     "StorageAccount": {
                         "type": "string",
-                        "defaultValue": "[StorageAccount]"
+                        "defaultValue": "transsynapsestorage3"
                     },
                     "ContainerName": {
                         "type": "string",
@@ -462,7 +466,7 @@
                     "referenceName": "ls_Synapse_Operation",
                     "type": "LinkedServiceReference",
                     "parameters": {
-                        "ServerName": "[ServerName].sql.azuresynapse.net",
+                        "ServerName": "transportsynapseanalytics3.sql.azuresynapse.net",
                         "DatabaseName": {
                             "value": "@dataset().DatabaseName",
                             "type": "Expression"
@@ -535,7 +539,7 @@
                 "parameters": {
                     "server": {
                         "type": "string",
-                        "defaultValue": "[ServerName].sql.azuresynapse.net"
+                        "defaultValue": "transportsynapseanalytics3.sql.azuresynapse.net"
                     },
                     "database": {
                         "type": "string",
@@ -592,7 +596,7 @@
                 "parameters": {
                     "server": {
                         "type": "string",
-                        "defaultValue": "[ServerName].sql.azuresynapse.net"
+                        "defaultValue": "transportsynapseanalytics3.sql.azuresynapse.net"
                     },
                     "database": {
                         "type": "string",
@@ -1403,7 +1407,7 @@
                 "variables": {
                     "StorageAccountName": {
                         "type": "String",
-                        "defaultValue": "[StorageAccount]"
+                        "defaultValue": "transsynapsestorage3"
                     }
                 },
                 "folder": {
@@ -1815,7 +1819,7 @@
                 "variables": {
                     "StorageAccountName": {
                         "type": "String",
-                        "defaultValue": "[StorageAccount]"
+                        "defaultValue": "transsynapsestorage3"
                     }
                 },   
                 "folder": {
