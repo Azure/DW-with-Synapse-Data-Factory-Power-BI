@@ -15,7 +15,7 @@ The solution is splited in:
 1. Create Azure Services.
 2. Deploy database scripts.
 3. Deploy Azure Data Factory ARM template.
-4. Process data in Azure Data Factory
+4. Process data in Azure Data Factory.
 5. Import data into a Power BI template.
 
 ## Final Power BI data model:
