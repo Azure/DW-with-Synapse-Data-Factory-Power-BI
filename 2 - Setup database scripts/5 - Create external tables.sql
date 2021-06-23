@@ -1,8 +1,8 @@
 -- Copyright (c) Microsoft Corporation.
 -- Licensed under the MIT License.
 
-## IMPORTANT!! ##
-## YOU NEED TO CHANGE STORAGE ACCOUNT NAME ON LINE 22
+--## IMPORTANT!! ##
+--## YOU NEED TO CHANGE STORAGE ACCOUNT NAME ON LINE 22
 
 --need to create a master key once per database.
 CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'xxxxxxxx';
