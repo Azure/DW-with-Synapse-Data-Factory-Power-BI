@@ -21,6 +21,7 @@ Connect-AzAccount
 install-module Az.Synapse
 Import-Module Az.Synapse
 
+#STEP 1:
 #IMPORTANT: PLEASE EXECUTE ONLY BELOW LINE AND FILL WITH PARAMETERS:
 New-AzSynapseWorkspace
 
@@ -32,6 +33,7 @@ $DefaultDataLakeStorageAccountName = "[Storage Account Name]"
 $DefaultDataLakeStorageFilesystem = "synapsecontainer"
 $User = "TransportSynapseAdmin"
 
+#STEP 2:
 ##################################################################################################################
 ##Grant IAM permission for Synapse Studio into storage account
 $ObjectID = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
