@@ -104,6 +104,8 @@ Open: [ARM template location](https://github.com/Azure/DW-with-Synapse-Data-Fact
 
 3. Once deploy is done, will be necessary to process the pipeline:
 
+DO NOT FORGET TO ADD YOUR SYNAPSE PASSWORD AT SYNAPSE LINKED SERVICES
+
 ![alt text](https://github.com/Azure/DW-with-Synapse-Data-Factory-Power-BI/blob/main/Support%20Files/RunPipeline.png)
 
 # 4 - Others steps
