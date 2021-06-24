@@ -1,23 +1,13 @@
 ## IMPORTANT!! ##
 
-####Please...just follow 6 below steps before deploy this ARM template!!
+####Please...just follow 3 below steps before deploy this ARM template!!
 
 #1) Replace storage account key:
 #Search for "[Replace with your storage account key]" and then replace with your storage account key.
 
-#2) Replace server value for dataset: "ds_Synapse_DataFlow_Var"
-#Search for "[ServerName].sql.azuresynapse.net" and then replace with your Synapse server name.
+#2) Search for "[ServerName]" and then replace the value with your server name.
 
-#3) Replace server value for linked server: "ls_Synapse_TransportDW"
-#Search for "[ServerName].sql.azuresynapse.net" and then replace with your Synapse server name.
-
-#4) Replace server value for linked server: "ls_Synapse_Operation"
-#Search for "[ServerName].sql.azuresynapse.net" and then replace with your Synapse server name.
-
-#5) Replace Storage account for datasets: "ds_ADL2_NYCRideAnalysis_parquet" and "ds_ADL2_NYCRideAnalysis_csv":
-#Search for "[StorageAccount] and then replace with your "StorageAccount" name.
-
-#6) Search for "[StorageAccount]" and then replace with your storage account name.
+#3) Search for "[StorageAccount]" and then replace the value with storage account name.
 
 #Code from next row:
 {
@@ -34,10 +24,6 @@
             "defaultValue": "[Replace with your storage account key]"
         },
         "ls_Synapse_TransportDW_connectionString": {
-            "type": "secureString",
-            "defaultValue": "integrated security=False;encrypt=True;connection timeout=30;data source=@{linkedService().server};initial catalog=@{linkedService().database};user id=@{linkedService().username}"
-        },
-        "ls_Synapse_Operation_connectionString": {
             "type": "secureString",
             "defaultValue": "integrated security=False;encrypt=True;connection timeout=30;data source=@{linkedService().server};initial catalog=@{linkedService().database};user id=@{linkedService().username}"
         },
@@ -78,7 +64,7 @@
                     }
                 },
                 "folder": {
-                    "name": "Transport Information"
+                    "name": "NYC Data Information"
                 },
                 "annotations": [],
                 "type": "DelimitedText",
@@ -121,7 +107,7 @@
                     }
                 },
                 "folder": {
-                    "name": "Transport Information"
+                    "name": "NYC Data Information"
                 },
                 "annotations": [],
                 "type": "DelimitedText",
@@ -145,55 +131,6 @@
             ]
         },
         {
-            "name": "[concat(parameters('factoryName'), '/ds_Synapse_NYCRideAnalysis')]",
-            "type": "Microsoft.DataFactory/factories/datasets",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "linkedServiceName": {
-                    "referenceName": "ls_Synapse_TransportDW",
-                    "type": "LinkedServiceReference",
-                    "parameters": {
-                        "server": "tcp:transportsynapseanalytics.sql.azuresynapse.net,1433",
-                        "database": "TransportDW",
-                        "username": "TransportSynapseAdmin"
-                    }
-                },
-                "parameters": {
-                    "DatabaseName": {
-                        "type": "string",
-                        "defaultValue": "TransportDW"
-                    },
-                    "SchemaName": {
-                        "type": "string",
-                        "defaultValue": "stage"
-                    },
-                    "TableName": {
-                        "type": "string",
-                        "defaultValue": "External_NYCCabTrip_Yellow"
-                    }
-                },
-                "folder": {
-                    "name": "Transport Information"
-                },
-                "annotations": [],
-                "type": "AzureSqlDWTable",
-                "schema": [],
-                "typeProperties": {
-                    "schema": {
-                        "value": "@dataset().SchemaName",
-                        "type": "Expression"
-                    },
-                    "table": {
-                        "value": "@dataset().TableName",
-                        "type": "Expression"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[concat(variables('factoryId'), '/linkedServices/ls_Synapse_TransportDW')]"
-            ]
-        },
-        {
             "name": "[concat(parameters('factoryName'), '/ds_ADL2_NYCRideAnalysis_parquet')]",
             "type": "Microsoft.DataFactory/factories/datasets",
             "apiVersion": "2018-06-01",
@@ -211,7 +148,7 @@
                 "parameters": {
                     "StorageAccount": {
                         "type": "string",
-                        "defaultValue": "transsynapsestorage3"
+                        "defaultValue": "[StorageAccount]"
                     },
                     "ContainerName": {
                         "type": "string",
@@ -227,7 +164,7 @@
                     }
                 },
                 "folder": {
-                    "name": "Transport Information"
+                    "name": "NYC Data Information"
                 },
                 "annotations": [],
                 "type": "Parquet",
@@ -273,7 +210,7 @@
                 "parameters": {
                     "StorageAccount": {
                         "type": "string",
-                        "defaultValue": "transsynapsestorage3"
+                        "defaultValue": "[StorageAccount]"
                     },
                     "ContainerName": {
                         "type": "string",
@@ -289,7 +226,7 @@
                     }
                 },
                 "folder": {
-                    "name": "Transport Information"
+                    "name": "NYC Data Information"
                 },
                 "annotations": [],
                 "type": "DelimitedText",
@@ -329,11 +266,13 @@
                     "referenceName": "ls_Synapse_TransportDW",
                     "type": "LinkedServiceReference",
                     "parameters": {
+                        "server": "tcp:[ServerName].sql.azuresynapse.net,1433",
+                        "database": "TransportDW",
                         "username": "TransportSynapseAdmin"
                     }
                 },
                 "folder": {
-                    "name": "Transport Information"
+                    "name": "NYC Data Information"
                 },
                 "annotations": [],
                 "type": "AzureSqlDWTable",
@@ -458,26 +397,92 @@
             ]
         },
         {
-            "name": "[concat(parameters('factoryName'), '/ds_Synapse_DataFlow_Var')]",
+            "name": "[concat(parameters('factoryName'), '/ds_Synapse_Lookup')]",
             "type": "Microsoft.DataFactory/factories/datasets",
             "apiVersion": "2018-06-01",
             "properties": {
                 "linkedServiceName": {
-                    "referenceName": "ls_Synapse_Operation",
+                    "referenceName": "ls_Synapse_TransportDW",
                     "type": "LinkedServiceReference",
                     "parameters": {
-                        "ServerName": "transportsynapseanalytics3.sql.azuresynapse.net",
-                        "DatabaseName": {
+                        "server": {
+                            "value": "@dataset().ServerName",
+                            "type": "Expression"
+                        },
+                        "database": {
                             "value": "@dataset().DatabaseName",
                             "type": "Expression"
                         },
-                        "UserName": "TransportSynapseAdmin"
+                        "username": {
+                            "value": "@dataset().UserName",
+                            "type": "Expression"
+                        }
                     }
                 },
                 "parameters": {
+                    "ServerName": {
+                        "type": "string",
+                        "defaultValue": "ServerName"
+                    },
                     "DatabaseName": {
                         "type": "string",
                         "defaultValue": "DatabaseName"
+                    },
+                    "UserName": {
+                        "type": "string",
+                        "defaultValue": "UserName"
+                    }
+                },
+                "folder": {
+                    "name": "NYC Data Information"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "dw",
+                    "table": "Table"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_Synapse_TransportDW')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_Synapse_CopyData')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_Synapse_TransportDW",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "server": {
+                            "value": "@dataset().ServerName",
+                            "type": "Expression"
+                        },
+                        "database": {
+                            "value": "@dataset().DatabaseName",
+                            "type": "Expression"
+                        },
+                        "username": {
+                            "value": "@dataset().UserName",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "parameters": {
+                    "ServerName": {
+                        "type": "string",
+                        "defaultValue": "ServerName"
+                    },
+                    "DatabaseName": {
+                        "type": "string",
+                        "defaultValue": "DatabaseName"
+                    },
+                    "UserName": {
+                        "type": "string",
+                        "defaultValue": "UserName"
                     },
                     "SchemaName": {
                         "type": "string",
@@ -489,7 +494,7 @@
                     }
                 },
                 "folder": {
-                    "name": "Transport Information"
+                    "name": "NYC Data Information"
                 },
                 "annotations": [],
                 "type": "AzureSqlDWTable",
@@ -506,134 +511,8 @@
                 }
             },
             "dependsOn": [
-                "[concat(variables('factoryId'), '/linkedServices/ls_Synapse_Operation')]"
+                "[concat(variables('factoryId'), '/linkedServices/ls_Synapse_TransportDW')]"
             ]
-        },
-        {
-            "name": "[concat(parameters('factoryName'), '/ls_transport_transformation_adl2')]",
-            "type": "Microsoft.DataFactory/factories/linkedServices",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "parameters": {
-                    "StorageAccount": {
-                        "type": "String"
-                    }
-                },
-                "annotations": [],
-                "type": "AzureBlobFS",
-                "typeProperties": {
-                    "url": "[parameters('ls_transport_transformation_adl2_properties_typeProperties_url')]",
-                    "accountKey": {
-                        "type": "SecureString",
-                        "value": "[parameters('ls_transport_transformation_adl2_accountKey')]"
-                    }
-                }
-            },
-            "dependsOn": []
-        },
-        {
-            "name": "[concat(parameters('factoryName'), '/ls_Synapse_TransportDW')]",
-            "type": "Microsoft.DataFactory/factories/linkedServices",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "parameters": {
-                    "server": {
-                        "type": "string",
-                        "defaultValue": "transportsynapseanalytics3.sql.azuresynapse.net"
-                    },
-                    "database": {
-                        "type": "string",
-                        "defaultValue": "TransportDW"
-                    },
-                    "username": {
-                        "type": "string",
-                        "defaultValue": "TransportSynapseAdmin"
-                    }
-                },
-                "annotations": [],
-                "type": "AzureSqlDW",
-                "typeProperties": {
-                    "connectionString": "[parameters('ls_Synapse_TransportDW_connectionString')]"
-                }
-            },
-            "dependsOn": []
-        },
-        {
-            "name": "[concat(parameters('factoryName'), '/ls_NYC_Cab_Repository_2')]",
-            "type": "Microsoft.DataFactory/factories/linkedServices",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "annotations": [],
-                "type": "HttpServer",
-                "typeProperties": {
-                    "url": "[parameters('ls_NYC_Cab_Repository_2_properties_typeProperties_url')]",
-                    "enableServerCertificateValidation": true,
-                    "authenticationType": "Anonymous"
-                }
-            },
-            "dependsOn": []
-        },
-        {
-            "name": "[concat(parameters('factoryName'), '/ls_NYC_Cab_Repository')]",
-            "type": "Microsoft.DataFactory/factories/linkedServices",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "annotations": [],
-                "type": "HttpServer",
-                "typeProperties": {
-                    "url": "[parameters('ls_NYC_Cab_Repository_properties_typeProperties_url')]",
-                    "enableServerCertificateValidation": true,
-                    "authenticationType": "Anonymous"
-                }
-            },
-            "dependsOn": []
-        },
-        {
-            "name": "[concat(parameters('factoryName'), '/ls_Synapse_Operation')]",
-            "type": "Microsoft.DataFactory/factories/linkedServices",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "parameters": {
-                    "server": {
-                        "type": "string",
-                        "defaultValue": "transportsynapseanalytics3.sql.azuresynapse.net"
-                    },
-                    "database": {
-                        "type": "string",
-                        "defaultValue": "TransportDW"
-                    },
-                    "username": {
-                        "type": "string",
-                        "defaultValue": "TransportSynapseAdmin"
-                    }
-                },
-                "annotations": [],
-                "type": "AzureSqlDW",
-                "typeProperties": {
-                    "connectionString": "[parameters('ls_Synapse_Operation_connectionString')]"
-                }
-            },
-            "dependsOn": []
-        },
-        {
-            "name": "[concat(parameters('factoryName'), '/TransportationIntegrationRuntime')]",
-            "type": "Microsoft.DataFactory/factories/integrationRuntimes",
-            "apiVersion": "2018-06-01",
-            "properties": {
-                "type": "Managed",
-                "typeProperties": {
-                    "computeProperties": {
-                        "location": "AutoResolve",
-                        "dataFlowProperties": {
-                            "computeType": "MemoryOptimized",
-                            "coreCount": 32,
-                            "timeToLive": 10,
-                            "cleanup": true
-                        }
-                    }
-                }
-            },
-            "dependsOn": []
         },
         {
             "name": "[concat(parameters('factoryName'), '/Load_dw_FactCabTrip')]",
@@ -720,7 +599,7 @@
                     "sinks": [
                         {
                             "dataset": {
-                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "referenceName": "ds_Synapse_DataFlow",
                                 "type": "DatasetReference"
                             },
                             "name": "InsertIntodwFactCabTrip"
@@ -764,13 +643,111 @@
                             "name": "GetDimCabType"
                         }
                     ],
-                    "script": "source(output(\n\t\tVendorID as integer,\n\t\tCabTypeID as integer,\n\t\tLpepPickupDatetime as timestamp,\n\t\tLpepDropoffDatetime as timestamp,\n\t\tStoreAndFwdFlag as string,\n\t\tRatecodeID as integer,\n\t\tPULocationID as integer,\n\t\tDOLocationID as integer,\n\t\tPassengerCount as integer,\n\t\tTripDistance as decimal(10,2),\n\t\tFareAmount as decimal(10,2),\n\t\tExtra as decimal(10,2),\n\t\tMtaTax as decimal(10,2),\n\t\tTipAmount as decimal(10,2),\n\t\tTollsAmount as decimal(10,2),\n\t\tImprovementSurcharge as decimal(10,2),\n\t\tTotalAmount as decimal(10,2),\n\t\tPaymentoType as integer,\n\t\tTripType as integer,\n\t\tCongestionSurcharge as decimal(10,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT\\n    CONVERT(INT,VendorID)                           AS VendorID,\\n    1                                               AS CabTypeID,\\n    CONVERT(DATETIME,lpep_pickup_datetime)          AS LpepPickupDatetime,\\n    CONVERT(DATETIME,lpep_dropoff_datetime)         AS LpepDropoffDatetime,\\n    store_and_fwd_flag                              AS StoreAndFwdFlag,\\n    CONVERT(INT,RatecodeID)                         AS RatecodeID,\\n    CONVERT(INT,PULocationID)                       AS PULocationID,\\n    CONVERT(INT,DOLocationID)                       AS DOLocationID,\\n    CONVERT(INT,passenger_count)                    AS PassengerCount,\\n    CONVERT(DECIMAL(10,2),trip_distance)            AS TripDistance,\\n    CONVERT(DECIMAL(10,2),fare_amount)              AS FareAmount,\\n    CONVERT(DECIMAL(10,2),extra)                    AS Extra,\\n    CONVERT(DECIMAL(10,2),mta_tax)                  AS MtaTax,\\n    CONVERT(DECIMAL(10,2),tip_amount)               AS TipAmount,\\n    CONVERT(DECIMAL(10,2),tolls_amount)             AS TollsAmount,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(improvement_surcharge,\\'\\') AS DECIMAL(10,2))) AS improvement_surcharge,\\n    CONVERT(DECIMAL(10,2),total_amount)             AS TotalAmount,\\n    CONVERT(INT,payment_type)                       AS PaymentoType,\\n    1                                               AS TripType,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(congestion_surcharge,\\'\\') AS DECIMAL(10,2)))  AS CongestionSurcharge\\nFROM\\n    stage.NYCCabTrip_Yellow',\n\tformat: 'query',\n\tstaged: false) ~> ReadFromStageYellow\nsource(output(\n\t\tVendorID as integer,\n\t\tCabTypeID as integer,\n\t\tLpepPickupDatetime as timestamp,\n\t\tLpepDropoffDatetime as timestamp,\n\t\tStoreAndFwdFlag as string,\n\t\tRatecodeID as integer,\n\t\tPULocationID as integer,\n\t\tDOLocationID as integer,\n\t\tPassengerCount as integer,\n\t\tTripDistance as decimal(10,2),\n\t\tFareAmount as decimal(10,2),\n\t\tExtra as decimal(10,2),\n\t\tMtaTax as decimal(10,2),\n\t\tTipAmount as decimal(10,2),\n\t\tTollsAmount as decimal(10,2),\n\t\tImprovementSurcharge as decimal(10,2),\n\t\tTotalAmount as decimal(10,2),\n\t\tPaymentoType as integer,\n\t\tTripType as integer,\n\t\tCongestionSurcharge as decimal(10,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT\\n    CONVERT(INT,VendorID)                           AS VendorID,\\n    2                                               AS CabTypeID,\\n    CONVERT(DATETIME,lpep_pickup_datetime)          AS LpepPickupDatetime,\\n    CONVERT(DATETIME,lpep_dropoff_datetime)         AS LpepDropoffDatetime,\\n    store_and_fwd_flag                              AS StoreAndFwdFlag,\\n    CONVERT(INT,RatecodeID)                         AS RatecodeID,\\n    CONVERT(INT,PULocationID)                       AS PULocationID,\\n    CONVERT(INT,DOLocationID)                       AS DOLocationID,\\n    CONVERT(INT,passenger_count)                    AS PassengerCount,\\n    CONVERT(DECIMAL(10,2),trip_distance)            AS TripDistance,\\n    CONVERT(DECIMAL(10,2),fare_amount)              AS FareAmount,\\n    CONVERT(DECIMAL(10,2),extra)                    AS Extra,\\n    CONVERT(DECIMAL(10,2),mta_tax)                  AS MtaTax,\\n    CONVERT(DECIMAL(10,2),tip_amount)               AS TipAmount,\\n    CONVERT(DECIMAL(10,2),tolls_amount)             AS TollsAmount,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(improvement_surcharge,\\'\\') AS DECIMAL(10,2))) AS improvement_surcharge,\\n    CONVERT(DECIMAL(10,2),total_amount)             AS TotalAmount,\\n    CONVERT(INT,payment_type)                       AS PaymentoType,\\n    CONVERT(INT,trip_type)                          AS TripType,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(congestion_surcharge,\\'\\') AS DECIMAL(10,2)))  AS CongestionSurcharge\\nFROM\\n    stage.NYCCabTrip_Green',\n\tformat: 'query',\n\tstaged: false) ~> ReadFromStageGreen\nsource(output(\n\t\tVendorKey as integer,\n\t\tVendorID as integer,\n\t\tVendorDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimVendor',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimVendor\nsource(output(\n\t\tRateKey as integer,\n\t\tRateID as integer,\n\t\tRateDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimRate WHERE RateID IS NOT NULL',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimRate\nsource(output(\n\t\tLocationKey as integer,\n\t\tLocationID as integer,\n\t\tBorough as string,\n\t\tZone as string,\n\t\tservice_zone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimLocationPU\nsource(output(\n\t\tTripTypeKey as integer,\n\t\tTripTypeID as integer,\n\t\tTripTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimTripType',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimTripType\nsource(output(\n\t\tPaymentTypeKey as integer,\n\t\tPaymentTypeID as integer,\n\t\tPaymentTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimPaymentType',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimPaymentType\nsource(output(\n\t\tLocationKey as integer,\n\t\tLocationID as integer,\n\t\tBorough as string,\n\t\tZone as string,\n\t\tservice_zone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimLocationDO\nsource(output(\n\t\tMaxCabTripKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT MaxCabTripKey = ISNULL(MAX(CabTripKey),0) from [dw].[FactCabTrip]',\n\tformat: 'query',\n\tstaged: false) ~> GetMaxCabTripKey\nsource(output(\n\t\tCabTypeKey as integer,\n\t\tCabTYpeID as integer,\n\t\tCabTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM [dw].[DimCabType]',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimCabType\nReadFromStageYellow, ReadFromStageGreen union(byName: true)~> UnionYellowandGreen\nUnionYellowandGreen, GetMaxCabTripKey join(1 == 1,\n\tjoinType:'cross',\n\tbroadcast: 'auto')~> JoinMaxValueCabTripKey\nJoinMaxValueCabTripKey keyGenerate(output(CreateCabTripKey as long),\n\tstartAt: 1L) ~> GenerateCabTripKey\nGenerateCabTripKey derive(CabTripKey = CreateCabTripKey + MaxCabTripKey) ~> GenerateCabTripKeyDefault\nGetDOLocationKey, ReadDimVendor lookup(UnionYellowandGreen@VendorID == ReadDimVendor@VendorID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetVendorKey\nGetVendorKey, ReadDimRate lookup(RatecodeID == RateID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetRateKey\nGenerateCabTripKeyDefault, ReadDimLocationPU lookup(PULocationID == LocationID,\n\tmultiple: false,\n\tpickup: 'any',\n\tpartitionBy('hash', 300,\n\t\tPULocationID\n\t),\n\tbroadcast: 'auto')~> GetPULocationKey\nGetPULocationKey, ReadDimLocationDO lookup(DOLocationID == ReadDimLocationDO@LocationID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDOLocationKey\nGetRateKey, ReadDimTripType lookup(TripType == TripTypeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDimTripType\nGetDimTripType, ReadDimPaymentType lookup(PaymentoType == PaymentTypeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetPaymentType\nGetDimCabType alterRow(insertIf(1==1)) ~> VerifyInsert\nGetPaymentType, ReadDimCabType lookup(UnionYellowandGreen@CabTypeID == ReadDimCabType@CabTYpeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDimCabType\nVerifyInsert sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tpreSQLs:['TRUNCATE TABLE dw.FactCabTrip'],\n\tmapColumn(\n\t\tCabTripKey,\n\t\tVendorKey,\n\t\tCabTypeKey,\n\t\tLpepPickupDatetime,\n\t\tLpepDropoffDatetime,\n\t\tStoreAndFwdFlag,\n\t\tRateKey,\n\t\tPULocationKey = ReadDimLocationPU@LocationKey,\n\t\tDOLocationKey = ReadDimLocationDO@LocationKey,\n\t\tTripTypeKey,\n\t\tPaymentTypeKey,\n\t\tPassengerCount,\n\t\tTripDistance,\n\t\tFareAmount,\n\t\tExtra,\n\t\tMtaTax,\n\t\tTipAmount,\n\t\tTollsAmount,\n\t\tImprovementSurcharge,\n\t\tTotalAmount\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError') ~> InsertIntodwFactCabTrip"
+                    "script": "source(output(\n\t\tVendorID as integer,\n\t\tCabTypeID as integer,\n\t\tLpepPickupDatetime as timestamp,\n\t\tLpepDropoffDatetime as timestamp,\n\t\tStoreAndFwdFlag as string,\n\t\tRatecodeID as integer,\n\t\tPULocationID as integer,\n\t\tDOLocationID as integer,\n\t\tPassengerCount as integer,\n\t\tTripDistance as decimal(10,2),\n\t\tFareAmount as decimal(10,2),\n\t\tExtra as decimal(10,2),\n\t\tMtaTax as decimal(10,2),\n\t\tTipAmount as decimal(10,2),\n\t\tTollsAmount as decimal(10,2),\n\t\tImprovementSurcharge as decimal(10,2),\n\t\tTotalAmount as decimal(10,2),\n\t\tPaymentoType as integer,\n\t\tTripType as integer,\n\t\tCongestionSurcharge as decimal(10,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT\\n    CONVERT(INT,VendorID)                           AS VendorID,\\n    1                                               AS CabTypeID,\\n    CONVERT(DATETIME,lpep_pickup_datetime)          AS LpepPickupDatetime,\\n    CONVERT(DATETIME,lpep_dropoff_datetime)         AS LpepDropoffDatetime,\\n    store_and_fwd_flag                              AS StoreAndFwdFlag,\\n    CONVERT(INT,RatecodeID)                         AS RatecodeID,\\n    CONVERT(INT,PULocationID)                       AS PULocationID,\\n    CONVERT(INT,DOLocationID)                       AS DOLocationID,\\n    CONVERT(INT,passenger_count)                    AS PassengerCount,\\n    CONVERT(DECIMAL(10,2),trip_distance)            AS TripDistance,\\n    CONVERT(DECIMAL(10,2),fare_amount)              AS FareAmount,\\n    CONVERT(DECIMAL(10,2),extra)                    AS Extra,\\n    CONVERT(DECIMAL(10,2),mta_tax)                  AS MtaTax,\\n    CONVERT(DECIMAL(10,2),tip_amount)               AS TipAmount,\\n    CONVERT(DECIMAL(10,2),tolls_amount)             AS TollsAmount,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(improvement_surcharge,\\'\\') AS DECIMAL(10,2))) AS improvement_surcharge,\\n    CONVERT(DECIMAL(10,2),total_amount)             AS TotalAmount,\\n    CONVERT(INT,payment_type)                       AS PaymentoType,\\n    1                                               AS TripType,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(congestion_surcharge,\\'\\') AS DECIMAL(10,2)))  AS CongestionSurcharge\\nFROM\\n    stage.NYCCabTrip_Yellow',\n\tformat: 'query',\n\tstaged: false) ~> ReadFromStageYellow\nsource(output(\n\t\tVendorID as integer,\n\t\tCabTypeID as integer,\n\t\tLpepPickupDatetime as timestamp,\n\t\tLpepDropoffDatetime as timestamp,\n\t\tStoreAndFwdFlag as string,\n\t\tRatecodeID as integer,\n\t\tPULocationID as integer,\n\t\tDOLocationID as integer,\n\t\tPassengerCount as integer,\n\t\tTripDistance as decimal(10,2),\n\t\tFareAmount as decimal(10,2),\n\t\tExtra as decimal(10,2),\n\t\tMtaTax as decimal(10,2),\n\t\tTipAmount as decimal(10,2),\n\t\tTollsAmount as decimal(10,2),\n\t\tImprovementSurcharge as decimal(10,2),\n\t\tTotalAmount as decimal(10,2),\n\t\tPaymentoType as integer,\n\t\tTripType as integer,\n\t\tCongestionSurcharge as decimal(10,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT\\n    CONVERT(INT,VendorID)                           AS VendorID,\\n    2                                               AS CabTypeID,\\n    CONVERT(DATETIME,lpep_pickup_datetime)          AS LpepPickupDatetime,\\n    CONVERT(DATETIME,lpep_dropoff_datetime)         AS LpepDropoffDatetime,\\n    store_and_fwd_flag                              AS StoreAndFwdFlag,\\n    CONVERT(INT,RatecodeID)                         AS RatecodeID,\\n    CONVERT(INT,PULocationID)                       AS PULocationID,\\n    CONVERT(INT,DOLocationID)                       AS DOLocationID,\\n    CONVERT(INT,passenger_count)                    AS PassengerCount,\\n    CONVERT(DECIMAL(10,2),trip_distance)            AS TripDistance,\\n    CONVERT(DECIMAL(10,2),fare_amount)              AS FareAmount,\\n    CONVERT(DECIMAL(10,2),extra)                    AS Extra,\\n    CONVERT(DECIMAL(10,2),mta_tax)                  AS MtaTax,\\n    CONVERT(DECIMAL(10,2),tip_amount)               AS TipAmount,\\n    CONVERT(DECIMAL(10,2),tolls_amount)             AS TollsAmount,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(improvement_surcharge,\\'\\') AS DECIMAL(10,2))) AS improvement_surcharge,\\n    CONVERT(DECIMAL(10,2),total_amount)             AS TotalAmount,\\n    CONVERT(INT,payment_type)                       AS PaymentoType,\\n    CONVERT(INT,trip_type)                          AS TripType,\\n    CONVERT(DECIMAL(10,2),CAST(NULLIF(congestion_surcharge,\\'\\') AS DECIMAL(10,2)))  AS CongestionSurcharge\\nFROM\\n    stage.NYCCabTrip_Green',\n\tformat: 'query',\n\tstaged: false) ~> ReadFromStageGreen\nsource(output(\n\t\tVendorKey as integer,\n\t\tVendorID as integer,\n\t\tVendorDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimVendor',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimVendor\nsource(output(\n\t\tRateKey as integer,\n\t\tRateID as integer,\n\t\tRateDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimRate WHERE RateID IS NOT NULL',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimRate\nsource(output(\n\t\tLocationKey as integer,\n\t\tLocationID as integer,\n\t\tBorough as string,\n\t\tZone as string,\n\t\tservice_zone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimLocationPU\nsource(output(\n\t\tTripTypeKey as integer,\n\t\tTripTypeID as integer,\n\t\tTripTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimTripType',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimTripType\nsource(output(\n\t\tPaymentTypeKey as integer,\n\t\tPaymentTypeID as integer,\n\t\tPaymentTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimPaymentType',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimPaymentType\nsource(output(\n\t\tLocationKey as integer,\n\t\tLocationID as integer,\n\t\tBorough as string,\n\t\tZone as string,\n\t\tservice_zone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM dw.DimLocation',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimLocationDO\nsource(output(\n\t\tMaxCabTripKey as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT MaxCabTripKey = ISNULL(MAX(CabTripKey),0) from [dw].[FactCabTrip]',\n\tformat: 'query',\n\tstaged: false) ~> GetMaxCabTripKey\nsource(output(\n\t\tCabTypeKey as integer,\n\t\tCabTYpeID as integer,\n\t\tCabTypeDescription as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT * FROM [dw].[DimCabType]',\n\tformat: 'query',\n\tstaged: false) ~> ReadDimCabType\nReadFromStageYellow, ReadFromStageGreen union(byName: true)~> UnionYellowandGreen\nUnionYellowandGreen, GetMaxCabTripKey join(1 == 1,\n\tjoinType:'cross',\n\tbroadcast: 'auto')~> JoinMaxValueCabTripKey\nJoinMaxValueCabTripKey keyGenerate(output(CreateCabTripKey as long),\n\tstartAt: 1L) ~> GenerateCabTripKey\nGenerateCabTripKey derive(CabTripKey = CreateCabTripKey + MaxCabTripKey) ~> GenerateCabTripKeyDefault\nGetDOLocationKey, ReadDimVendor lookup(UnionYellowandGreen@VendorID == ReadDimVendor@VendorID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetVendorKey\nGetVendorKey, ReadDimRate lookup(RatecodeID == RateID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetRateKey\nGenerateCabTripKeyDefault, ReadDimLocationPU lookup(PULocationID == LocationID,\n\tmultiple: false,\n\tpickup: 'any',\n\tpartitionBy('hash', 300,\n\t\tPULocationID\n\t),\n\tbroadcast: 'auto')~> GetPULocationKey\nGetPULocationKey, ReadDimLocationDO lookup(DOLocationID == ReadDimLocationDO@LocationID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDOLocationKey\nGetRateKey, ReadDimTripType lookup(TripType == TripTypeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDimTripType\nGetDimTripType, ReadDimPaymentType lookup(PaymentoType == PaymentTypeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetPaymentType\nGetDimCabType alterRow(insertIf(1==1)) ~> VerifyInsert\nGetPaymentType, ReadDimCabType lookup(UnionYellowandGreen@CabTypeID == ReadDimCabType@CabTYpeID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetDimCabType\nVerifyInsert sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tCabTripKey as integer,\n\t\tVendorKey as integer,\n\t\tCabTypeKey as integer,\n\t\tLpepPickupDatetime as timestamp,\n\t\tLpepDropoffDatetime as timestamp,\n\t\tStoreAndFwdFlag as string,\n\t\tRateKey as integer,\n\t\tPULocationKey as integer,\n\t\tDOLocationKey as integer,\n\t\tTripTypeKey as integer,\n\t\tPaymentTypeKey as integer,\n\t\tPassengerCount as integer,\n\t\tTripDistance as decimal(10,2),\n\t\tFareAmount as decimal(10,2),\n\t\tExtra as decimal(10,2),\n\t\tMtaTax as decimal(10,2),\n\t\tTipAmount as decimal(10,2),\n\t\tTollsAmount as decimal(10,2),\n\t\tImprovementSurcharge as decimal(10,2),\n\t\tTotalAmount as decimal(10,2)\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tpreSQLs:['TRUNCATE TABLE dw.FactCabTrip'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCabTripKey,\n\t\tVendorKey,\n\t\tCabTypeKey,\n\t\tLpepPickupDatetime,\n\t\tLpepDropoffDatetime,\n\t\tStoreAndFwdFlag,\n\t\tRateKey,\n\t\tPULocationKey = ReadDimLocationPU@LocationKey,\n\t\tDOLocationKey = ReadDimLocationDO@LocationKey,\n\t\tTripTypeKey,\n\t\tPaymentTypeKey,\n\t\tPassengerCount,\n\t\tTripDistance,\n\t\tFareAmount,\n\t\tExtra,\n\t\tMtaTax,\n\t\tTipAmount,\n\t\tTollsAmount,\n\t\tImprovementSurcharge,\n\t\tTotalAmount\n\t)) ~> InsertIntodwFactCabTrip"
                 }
             },
             "dependsOn": [
-                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow')]",
-                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow_Var')]"
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow')]"
             ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_transport_transformation_adl2')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "StorageAccount": {
+                        "type": "String"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureBlobFS",
+                "typeProperties": {
+                    "url": "[parameters('ls_transport_transformation_adl2_properties_typeProperties_url')]",
+                    "accountKey": {
+                        "type": "SecureString",
+                        "value": "[parameters('ls_transport_transformation_adl2_accountKey')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_Synapse_TransportDW')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "server": {
+                        "type": "string",
+                        "defaultValue": "tcp:[ServerName].sql.azuresynapse.net,1433"
+                    },
+                    "database": {
+                        "type": "string",
+                        "defaultValue": "TransportDW"
+                    },
+                    "username": {
+                        "type": "string",
+                        "defaultValue": "TransportSynapseAdmin"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureSqlDW",
+                "typeProperties": {
+                    "connectionString": "[parameters('ls_Synapse_TransportDW_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_NYC_Cab_Repository_2')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "HttpServer",
+                "typeProperties": {
+                    "url": "[parameters('ls_NYC_Cab_Repository_2_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "Anonymous"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_NYC_Cab_Repository')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "HttpServer",
+                "typeProperties": {
+                    "url": "[parameters('ls_NYC_Cab_Repository_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "Anonymous"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TransportationIntegrationRuntime')]",
+            "type": "Microsoft.DataFactory/factories/integrationRuntimes",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "Managed",
+                "typeProperties": {
+                    "computeProperties": {
+                        "location": "AutoResolve",
+                        "dataFlowProperties": {
+                            "computeType": "MemoryOptimized",
+                            "coreCount": 32,
+                            "timeToLive": 10,
+                            "cleanup": true
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
         },
         {
             "name": "[concat(parameters('factoryName'), '/Load from web to ADL2')]",
@@ -798,10 +775,21 @@
                                 "partitionOption": "None"
                             },
                             "dataset": {
-                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "referenceName": "ds_Synapse_Lookup",
                                 "type": "DatasetReference",
                                 "parameters": {
-                                    "DatabaseName": "TransportDW"
+                                    "ServerName": {
+                                        "value": "@pipeline().parameters.ServerName",
+                                        "type": "Expression"
+                                    },
+                                    "DatabaseName": {
+                                        "value": "@pipeline().parameters.DatabaseName",
+                                        "type": "Expression"
+                                    },
+                                    "UserName": {
+                                        "value": "@pipeline().parameters.UserName",
+                                        "type": "Expression"
+                                    }
                                 }
                             },
                             "firstRowOnly": false
@@ -827,10 +815,21 @@
                                 "partitionOption": "None"
                             },
                             "dataset": {
-                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "referenceName": "ds_Synapse_Lookup",
                                 "type": "DatasetReference",
                                 "parameters": {
-                                    "DatabaseName": "TransportDW"
+                                    "ServerName": {
+                                        "value": "@pipeline().parameters.ServerName",
+                                        "type": "Expression"
+                                    },
+                                    "DatabaseName": {
+                                        "value": "@pipeline().parameters.DatabaseName",
+                                        "type": "Expression"
+                                    },
+                                    "UserName": {
+                                        "value": "@pipeline().parameters.UserName",
+                                        "type": "Expression"
+                                    }
                                 }
                             },
                             "firstRowOnly": false
@@ -1045,14 +1044,28 @@
                         }
                     }
                 ],
+                "parameters": {
+                    "ServerName": {
+                        "type": "string",
+                        "defaultValue": "ServerName"
+                    },
+                    "DatabaseName": {
+                        "type": "string",
+                        "defaultValue": "DatabaseName"
+                    },
+                    "UserName": {
+                        "type": "string",
+                        "defaultValue": "UserName"
+                    }
+                },
                 "folder": {
                     "name": "NYC Data Transformation"
                 },
                 "annotations": [],
-                "lastPublishTime": "2021-03-09T19:57:21Z"
+                "lastPublishTime": "2021-06-11T15:46:51Z"
             },
             "dependsOn": [
-                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow_Var')]",
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_Lookup')]",
                 "[concat(variables('factoryId'), '/datasets/ds_NYC_Cab_Repository')]",
                 "[concat(variables('factoryId'), '/datasets/ds_ADL2_NYCRideAnalysis_parquet')]",
                 "[concat(variables('factoryId'), '/datasets/ds_NYC_Cab_Repository2')]"
@@ -1091,10 +1104,21 @@
                                 "partitionOption": "None"
                             },
                             "dataset": {
-                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "referenceName": "ds_Synapse_Lookup",
                                 "type": "DatasetReference",
                                 "parameters": {
-                                    "DatabaseName": "TransportDW"
+                                    "ServerName": {
+                                        "value": "@pipeline().parameters.ServerName",
+                                        "type": "Expression"
+                                    },
+                                    "DatabaseName": {
+                                        "value": "@pipeline().parameters.DatabaseName",
+                                        "type": "Expression"
+                                    },
+                                    "UserName": {
+                                        "value": "@pipeline().parameters.UserName",
+                                        "type": "Expression"
+                                    }
                                 }
                             },
                             "firstRowOnly": false
@@ -1167,11 +1191,19 @@
                                     },
                                     "inputs": [
                                         {
-                                            "referenceName": "ds_Synapse_NYCRideAnalysis",
+                                            "referenceName": "ds_Synapse_CopyData",
                                             "type": "DatasetReference",
                                             "parameters": {
+                                                "ServerName": {
+                                                    "value": "@pipeline().parameters.ServerName",
+                                                    "type": "Expression"
+                                                },
                                                 "DatabaseName": {
                                                     "value": "@item().SourceControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "UserName": {
+                                                    "value": "@pipeline().parameters.UserName",
                                                     "type": "Expression"
                                                 },
                                                 "SchemaName": {
@@ -1187,11 +1219,19 @@
                                     ],
                                     "outputs": [
                                         {
-                                            "referenceName": "ds_Synapse_NYCRideAnalysis",
+                                            "referenceName": "ds_Synapse_CopyData",
                                             "type": "DatasetReference",
                                             "parameters": {
+                                                "ServerName": {
+                                                    "value": "@pipeline().parameters.ServerName",
+                                                    "type": "Expression"
+                                                },
                                                 "DatabaseName": {
                                                     "value": "@item().DestinationControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "UserName": {
+                                                    "value": "@pipeline().parameters.UserName",
                                                     "type": "Expression"
                                                 },
                                                 "SchemaName": {
@@ -1236,10 +1276,21 @@
                                 "partitionOption": "None"
                             },
                             "dataset": {
-                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "referenceName": "ds_Synapse_Lookup",
                                 "type": "DatasetReference",
                                 "parameters": {
-                                    "DatabaseName": "TransportDW"
+                                    "ServerName": {
+                                        "value": "@pipeline().parameters.ServerName",
+                                        "type": "Expression"
+                                    },
+                                    "DatabaseName": {
+                                        "value": "@pipeline().parameters.DatabaseName",
+                                        "type": "Expression"
+                                    },
+                                    "UserName": {
+                                        "value": "@pipeline().parameters.UserName",
+                                        "type": "Expression"
+                                    }
                                 }
                             },
                             "firstRowOnly": false
@@ -1312,11 +1363,19 @@
                                     },
                                     "inputs": [
                                         {
-                                            "referenceName": "ds_Synapse_NYCRideAnalysis",
+                                            "referenceName": "ds_Synapse_CopyData",
                                             "type": "DatasetReference",
                                             "parameters": {
+                                                "ServerName": {
+                                                    "value": "@pipeline().parameters.ServerName",
+                                                    "type": "Expression"
+                                                },
                                                 "DatabaseName": {
                                                     "value": "@item().SourceControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "UserName": {
+                                                    "value": "@pipeline().parameters.UserName",
                                                     "type": "Expression"
                                                 },
                                                 "SchemaName": {
@@ -1332,11 +1391,19 @@
                                     ],
                                     "outputs": [
                                         {
-                                            "referenceName": "ds_Synapse_NYCRideAnalysis",
+                                            "referenceName": "ds_Synapse_CopyData",
                                             "type": "DatasetReference",
                                             "parameters": {
+                                                "ServerName": {
+                                                    "value": "@pipeline().parameters.ServerName",
+                                                    "type": "Expression"
+                                                },
                                                 "DatabaseName": {
                                                     "value": "@item().DestinationControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "UserName": {
+                                                    "value": "@pipeline().parameters.UserName",
                                                     "type": "Expression"
                                                 },
                                                 "SchemaName": {
@@ -1374,10 +1441,21 @@
                                 "partitionOption": "None"
                             },
                             "dataset": {
-                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "referenceName": "ds_Synapse_Lookup",
                                 "type": "DatasetReference",
                                 "parameters": {
-                                    "DatabaseName": "TransportDW"
+                                    "ServerName": {
+                                        "value": "@pipeline().parameters.ServerName",
+                                        "type": "Expression"
+                                    },
+                                    "DatabaseName": {
+                                        "value": "@pipeline().parameters.DatabaseName",
+                                        "type": "Expression"
+                                    },
+                                    "UserName": {
+                                        "value": "@pipeline().parameters.UserName",
+                                        "type": "Expression"
+                                    }
                                 }
                             },
                             "firstRowOnly": true
@@ -1404,21 +1482,35 @@
                         }
                     }
                 ],
+                "parameters": {
+                    "ServerName": {
+                        "type": "string",
+                        "defaultValue": "ServerName"
+                    },
+                    "DatabaseName": {
+                        "type": "string",
+                        "defaultValue": "DatabaseName"
+                    },
+                    "UserName": {
+                        "type": "string",
+                        "defaultValue": "UserName"
+                    }
+                },
                 "variables": {
                     "StorageAccountName": {
                         "type": "String",
-                        "defaultValue": "transsynapsestorage3"
+                        "defaultValue": "[StorageAccount]"
                     }
                 },
                 "folder": {
                     "name": "NYC Data Transformation"
                 },
                 "annotations": [],
-                "lastPublishTime": "2021-03-09T19:57:21Z"
+                "lastPublishTime": "2021-06-11T15:47:38Z"
             },
             "dependsOn": [
-                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow_Var')]",
-                "[concat(variables('factoryId'), '/datasets/ds_Synapse_NYCRideAnalysis')]",
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_Lookup')]",
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_CopyData')]",
                 "[concat(variables('factoryId'), '/linkedServices/ls_transport_transformation_adl2')]"
             ]
         },
@@ -1448,12 +1540,21 @@
                                 "partitionOption": "None"
                             },
                             "dataset": {
-                                "referenceName": "ds_Synapse_DataFlow_Var",
+                                "referenceName": "ds_Synapse_Lookup",
                                 "type": "DatasetReference",
                                 "parameters": {
-                                    "DatabaseName": "TransportDW",
-                                    "SchemaName": "SchemaName",
-                                    "TableName": "TableName"
+                                    "ServerName": {
+                                        "value": "@pipeline().parameters.ServerName",
+                                        "type": "Expression"
+                                    },
+                                    "DatabaseName": {
+                                        "value": "@pipeline().parameters.DatabaseName",
+                                        "type": "Expression"
+                                    },
+                                    "UserName": {
+                                        "value": "@pipeline().parameters.UserName",
+                                        "type": "Expression"
+                                    }
                                 }
                             },
                             "firstRowOnly": false
@@ -1545,11 +1646,19 @@
                                     ],
                                     "outputs": [
                                         {
-                                            "referenceName": "ds_Synapse_NYCRideAnalysis",
+                                            "referenceName": "ds_Synapse_CopyData",
                                             "type": "DatasetReference",
                                             "parameters": {
+                                                "ServerName": {
+                                                    "value": "@pipeline().parameters.ServerName",
+                                                    "type": "Expression"
+                                                },
                                                 "DatabaseName": {
                                                     "value": "@item().DestinationControl1",
+                                                    "type": "Expression"
+                                                },
+                                                "UserName": {
+                                                    "value": "@pipeline().parameters.UserName",
                                                     "type": "Expression"
                                                 },
                                                 "SchemaName": {
@@ -1568,16 +1677,30 @@
                         }
                     }
                 ],
+                "parameters": {
+                    "ServerName": {
+                        "type": "string",
+                        "defaultValue": "ServerName"
+                    },
+                    "DatabaseName": {
+                        "type": "string",
+                        "defaultValue": "DatabaseName"
+                    },
+                    "UserName": {
+                        "type": "string",
+                        "defaultValue": "UserName"
+                    }
+                },
                 "folder": {
                     "name": "NYC Data Transformation"
                 },
                 "annotations": [],
-                "lastPublishTime": "2021-03-16T15:38:03Z"
+                "lastPublishTime": "2021-06-11T15:47:44Z"
             },
             "dependsOn": [
-                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow_Var')]",
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_Lookup')]",
                 "[concat(variables('factoryId'), '/datasets/ds_ADL2_NYCRideAnalysis_csv')]",
-                "[concat(variables('factoryId'), '/datasets/ds_Synapse_NYCRideAnalysis')]"
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_CopyData')]"
             ]
         },
         {
@@ -1589,7 +1712,14 @@
                     {
                         "name": "From Web to ADL2",
                         "type": "ExecutePipeline",
-                        "dependsOn": [],
+                        "dependsOn": [
+                            {
+                                "activity": "Get environment parameters",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
                         "userProperties": [],
                         "typeProperties": {
                             "pipeline": {
@@ -1597,7 +1727,20 @@
                                 "type": "PipelineReference"
                             },
                             "waitOnCompletion": true,
-                            "parameters": {}
+                            "parameters": {
+                                "ServerName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.ServerName",
+                                    "type": "Expression"
+                                },
+                                "DatabaseName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.DatabaseName",
+                                    "type": "Expression"
+                                },
+                                "UserName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.UserName",
+                                    "type": "Expression"
+                                }
+                            }
                         }
                     },
                     {
@@ -1618,7 +1761,20 @@
                                 "type": "PipelineReference"
                             },
                             "waitOnCompletion": true,
-                            "parameters": {}
+                            "parameters": {
+                                "ServerName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.ServerName",
+                                    "type": "Expression"
+                                },
+                                "DatabaseName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.DatabaseName",
+                                    "type": "Expression"
+                                },
+                                "UserName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.UserName",
+                                    "type": "Expression"
+                                }
+                            }
                         }
                     },
                     {
@@ -1639,7 +1795,20 @@
                                 "type": "PipelineReference"
                             },
                             "waitOnCompletion": true,
-                            "parameters": {}
+                            "parameters": {
+                                "ServerName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.ServerName",
+                                    "type": "Expression"
+                                },
+                                "DatabaseName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.DatabaseName",
+                                    "type": "Expression"
+                                },
+                                "UserName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.UserName",
+                                    "type": "Expression"
+                                }
+                            }
                         }
                     },
                     {
@@ -1660,21 +1829,91 @@
                                 "type": "PipelineReference"
                             },
                             "waitOnCompletion": true,
-                            "parameters": {}
+                            "parameters": {
+                                "ServerName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.ServerName",
+                                    "type": "Expression"
+                                },
+                                "DatabaseName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.DatabaseName",
+                                    "type": "Expression"
+                                },
+                                "UserName": {
+                                    "value": "@activity('Get environment parameters').output.firstRow.UserName",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Get environment parameters",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": {
+                                    "value": "@{concat('SELECT ''',\npipeline().parameters.ServerName,''' AS ServerName,','''','',\npipeline().parameters.DatabaseName,''' AS DatabaseName,','''','',\npipeline().parameters.UserName,''' AS UserName'\n)}",
+                                    "type": "Expression"
+                                },
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "ds_Synapse_Lookup",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "ServerName": {
+                                        "value": "@pipeline().parameters.ServerName",
+                                        "type": "Expression"
+                                    },
+                                    "DatabaseName": {
+                                        "value": "@pipeline().parameters.DatabaseName",
+                                        "type": "Expression"
+                                    },
+                                    "UserName": {
+                                        "value": "@pipeline().parameters.UserName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
                         }
                     }
                 ],
+                "parameters": {
+                    "ServerName": {
+                        "type": "string",
+                        "defaultValue": "ServerName"
+                    },
+                    "DatabaseName": {
+                        "type": "string",
+                        "defaultValue": "DatabaseName"
+                    },
+                    "UserName": {
+                        "type": "string",
+                        "defaultValue": "UserName"
+                    }
+                },
                 "folder": {
                     "name": "NYC Data Transformation"
                 },
                 "annotations": [],
-                "lastPublishTime": "2021-03-17T16:38:04Z"
+                "lastPublishTime": "2021-06-17T21:01:37Z"
             },
             "dependsOn": [
                 "[concat(variables('factoryId'), '/pipelines/Load from web to ADL2')]",
                 "[concat(variables('factoryId'), '/pipelines/Load from ADLS to stage')]",
                 "[concat(variables('factoryId'), '/pipelines/Load taxi zone')]",
-                "[concat(variables('factoryId'), '/pipelines/Load from stage to dw')]"
+                "[concat(variables('factoryId'), '/pipelines/Load from stage to dw')]",
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_Lookup')]"
             ]
         },
         {
@@ -1718,20 +1957,7 @@
                                     "ReadDimLocationDO": {},
                                     "GetMaxCabTripKey": {},
                                     "ReadDimCabType": {},
-                                    "InsertIntodwFactCabTrip": {
-                                        "DatabaseName": {
-                                            "value": "@activity('Get table to load').output.firstrow.SourceControl1",
-                                            "type": "Expression"
-                                        },
-                                        "SchemaName": {
-                                            "value": "@activity('Get table to load').output.firstrow.SourceControl2",
-                                            "type": "Expression"
-                                        },
-                                        "TableName": {
-                                            "value": "@activity('Get table to load').output.firstrow.SourceControl3",
-                                            "type": "Expression"
-                                        }
-                                    }
+                                    "InsertIntodwFactCabTrip": {}
                                 }
                             },
                             "staging": {
@@ -1781,9 +2007,22 @@
                                 "partitionOption": "None"
                             },
                             "dataset": {
-                                "referenceName": "ds_Synapse_DataFlow",
+                                "referenceName": "ds_Synapse_Lookup",
                                 "type": "DatasetReference",
-                                "parameters": {}
+                                "parameters": {
+                                    "ServerName": {
+                                        "value": "@pipeline().parameters.ServerName",
+                                        "type": "Expression"
+                                    },
+                                    "DatabaseName": {
+                                        "value": "@pipeline().parameters.DatabaseName",
+                                        "type": "Expression"
+                                    },
+                                    "UserName": {
+                                        "value": "@pipeline().parameters.UserName",
+                                        "type": "Expression"
+                                    }
+                                }
                             },
                             "firstRowOnly": true
                         }
@@ -1808,31 +2047,52 @@
                                 "partitionOption": "None"
                             },
                             "dataset": {
-                                "referenceName": "ds_Synapse_DataFlow",
+                                "referenceName": "ds_Synapse_Lookup",
                                 "type": "DatasetReference",
-                                "parameters": {}
+                                "parameters": {
+                                    "ServerName": {
+                                        "value": "@pipeline().parameters.ServerName",
+                                        "type": "Expression"
+                                    },
+                                    "DatabaseName": {
+                                        "value": "@pipeline().parameters.DatabaseName",
+                                        "type": "Expression"
+                                    },
+                                    "UserName": {
+                                        "value": "@pipeline().parameters.UserName",
+                                        "type": "Expression"
+                                    }
+                                }
                             },
                             "firstRowOnly": true
                         }
                     }
                 ],
-                "variables": {
-                    "StorageAccountName": {
-                        "type": "String",
-                        "defaultValue": "transsynapsestorage3"
+                "parameters": {
+                    "ServerName": {
+                        "type": "string",
+                        "defaultValue": "ServerName"
+                    },
+                    "DatabaseName": {
+                        "type": "string",
+                        "defaultValue": "DatabaseName"
+                    },
+                    "UserName": {
+                        "type": "string",
+                        "defaultValue": "UserName"
                     }
-                },   
+                },
                 "folder": {
                     "name": "NYC Data Transformation"
                 },
                 "annotations": [],
-                "lastPublishTime": "2021-05-07T20:16:57Z"
+                "lastPublishTime": "2021-06-17T18:42:16Z"
             },
             "dependsOn": [
                 "[concat(variables('factoryId'), '/dataflows/Load_dw_FactCabTrip')]",
                 "[concat(variables('factoryId'), '/linkedServices/ls_transport_transformation_adl2')]",
                 "[concat(variables('factoryId'), '/integrationRuntimes/TransportationIntegrationRuntime')]",
-                "[concat(variables('factoryId'), '/datasets/ds_Synapse_DataFlow')]"
+                "[concat(variables('factoryId'), '/datasets/ds_Synapse_Lookup')]"
             ]
         }
     ]
